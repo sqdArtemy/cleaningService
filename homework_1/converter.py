@@ -48,10 +48,11 @@ class JsonToCsv(AbstractConverter): #  Converter from JSON to CSV
 
             for i in data:
                 dictionaries = data[i]
-                records = [dictionaries[0].keys(),] # Adds first row as a reference values(name tags)
-                for dict in dictionaries: records.append(dict.values())
+                records = [d.values() for d in dictionaries]  #  Using list comprehension in order to convert data
+                records.insert(0, dictionaries[0])
+                print(records)
                 for j in records: result += (",".join(j) + "\n")
-            file_writer(data = result, file = output) #  calling funtion that writes to a file
+            file_writer(data = result, file = output) #  calling function that writes to a file
 
 obj1 = CsvToJson(); obj1.converter("input_1.csv", "output_1.json")
 obj2 = JsonToCsv(); obj2.converter("input_2.json", "output_2.csv")
