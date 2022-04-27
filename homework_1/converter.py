@@ -32,7 +32,8 @@ class CsvToJson(AbstractConverter): #  converter from CSV to JSON
                     counter += 1
                 if len(converted) <= 1: converted = converted[0];
 
-            file_writer(data = json.dumps({"data:": converted}), file = output) #  calling a function that writes to a file
+            #  calling a function that writes to a file
+            file_writer(data = str({"data:": converted}).replace("'", '"'), file = output)
 
 
 class JsonToCsv(AbstractConverter): #  Converter from JSON to CSV
@@ -50,7 +51,6 @@ class JsonToCsv(AbstractConverter): #  Converter from JSON to CSV
                 dictionaries = data[i]
                 records = [d.values() for d in dictionaries]  #  Using list comprehension in order to convert data
                 records.insert(0, dictionaries[0])
-                print(records)
                 for j in records: result += (",".join(j) + "\n")
             file_writer(data = result, file = output) #  calling function that writes to a file
 
