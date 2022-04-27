@@ -37,8 +37,11 @@ class CsvToJson(AbstractConverter): #  converter from CSV to JSON
 class JsonToCsv(AbstractConverter): #  Converter from JSON to CSV
     def converter(self, input, output):
         with open(input, "r") as json_file:
-            result = str()
-            data = eval(json_file.read().replace('\n', '')) # reading json file to dict
+            result = str(); data = {}
+            try:
+                data = eval(json_file.read().replace('\n', '')) # reading json file to dict
+            except SyntaxError:
+                print("Looks like file is empty !")
 
             for i in data:
                 dictionaries = data[i]
