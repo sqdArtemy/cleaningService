@@ -1,10 +1,11 @@
 from datetime import datetime
-from .profiles import *
-from .request import *
+from .profiles import User
+from .request import Request
+from django.db import models
 
 
 class Review(models.Model):
-    request = models.ForeignKey(to=Request, on_delete=models.SET_NULL, null=True)
+    request = models.ForeignKey(to=Request, on_delete=models.CASCADE)
     customer = models.ForeignKey(to=User, on_delete=models.CASCADE)
     feedback = models.TimeField(verbose_name="Customer`s feedback")
     rate = models.PositiveIntegerField(verbose_name="Star-rating", default=0)

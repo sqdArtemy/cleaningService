@@ -19,7 +19,7 @@ class RequestStatus(models.Model):
 class Request(models.Model):
     service = models.ForeignKey(to=Service, on_delete=models.CASCADE)
     customer = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    status = models.ForeignKey(to=RequestStatus, on_delete=models.SET_NULL, null=True)
+    status = models.ForeignKey(to=RequestStatus, on_delete=models.CASCADE)
     total_area = models.FloatField(verbose_name="Total area to be cleaned", default=0)
     address = models.TimeField(verbose_name="User`s address")
     total_cost = models.FloatField(verbose_name="Final cost of the service")
