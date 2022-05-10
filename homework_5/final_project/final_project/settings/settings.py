@@ -40,12 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Extensions
-    'rest_framework'
-    
+    'rest_framework',
+
     # My apps
     'core',
     'api'
 ]
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
