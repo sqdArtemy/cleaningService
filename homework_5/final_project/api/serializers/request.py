@@ -1,6 +1,4 @@
 from rest_framework import serializers
-import sys
-sys.path.append("...")
 from core.models.request import Request, RequestStatus
 
 

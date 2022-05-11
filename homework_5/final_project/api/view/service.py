@@ -1,10 +1,8 @@
-import sys
 from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.service import CategorySerializer, ServiceSerializer
-sys.path.append(".")
 from core.models.service import Service, Category
 
 

@@ -1,20 +1,12 @@
-import sys
-from rest_framework import status, generics, viewsets
+from rest_framework import status, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from api.serializers.reviews import ReviewSerializer
-sys.path.append(".")
 from core.models.reviews import Review
 
 
 # Views for review
-class ReviewsList(generics.ListCreateAPIView):  # Generics views
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = []
-
-
 class ReviewDetails(APIView):  # APIView
     def get_review(self, pk):
         try:

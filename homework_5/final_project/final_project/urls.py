@@ -16,12 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
-import sys
-sys.path.append("..")
-from api.view.profiles import UserDetails, UserRolesList, UserRoleDetails, UserViewSet
-from api.view.request import RequestStatusDetails, RequestStatusesList, RequestDetails, RequestViewSet
-from api.view.service import CategoryDetails, ServiceDetails, CategoryViewSet, ServiceViewSet
-from api.view.reviews import ReviewDetails, ReviewViewSet
+from api.view import UserDetails, UserRolesList, UserRoleDetails, UserViewSet, ReviewDetails, ReviewViewSet,\
+    CategoryDetails, ServiceDetails, CategoryViewSet, ServiceViewSet, RequestStatusDetails, RequestStatusesList, RequestDetails, RequestViewSet
+
 
 router = routers.SimpleRouter()
 router.register(r'categories_viewset', CategoryViewSet)
