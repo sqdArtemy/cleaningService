@@ -40,7 +40,7 @@ urlpatterns += [
     path('users/', UserViewSet.as_view({'get': 'list'})),
     path('user/<pk>', UserDetails.as_view()),
     # Request status paths
-    path('  request_status/<pk>', RequestStatusDetails.as_view()),
+    path('request_status/<pk>', RequestStatusDetails.as_view()),
     path('generics_request_statuses_list/', RequestStatusesList.as_view()),
     # Request paths
     path('requests/', RequestViewSet.as_view({'get': 'list'})),
