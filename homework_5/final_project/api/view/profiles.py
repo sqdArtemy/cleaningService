@@ -77,7 +77,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         return Response(serializer.data)
 
     def list(self, request: User, *args, **kwargs) -> Response:
-        serializer = self.get_serializer(self.get_queryset())
+        serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
     def update(self, request, pk):
