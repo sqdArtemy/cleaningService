@@ -15,9 +15,9 @@ class UserRole(models.Model):  # User role (Customer or company)
 
 
 class User(models.Model):  # Base user`s model
-    name = models.CharField(verbose_name="User`s name", max_length=150, null=False)
-    email = models.EmailField(verbose_name="User`s email", null=False)
-    phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False)
+    name = models.CharField(verbose_name="User`s name", max_length=150, null=False, default="default")
+    email = models.EmailField(verbose_name="User`s email", null=False, default="default@gmail.com")
+    phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
 
     def __str__(self):  # Returns comprehensible representation of object

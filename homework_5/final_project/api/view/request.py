@@ -1,24 +1,14 @@
 import sys
-from rest_framework.decorators import api_view
 from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from ..serializers.request import RequestStatusSerializer, RequestSerializer
+from api.serializers.request import RequestStatusSerializer, RequestSerializer
 sys.path.append(".")
 from core.models.request import Request, RequestStatus
 
 
 # Views for request status
-@api_view(['GET'])
-def request_statuses_list(request, format=None):
-    if request.method == 'GET':
-        request_statuses = RequestStatus.objects.all()
-        serializer = RequestStatusSerializer(request_statuses, many=True)
-        return Response(serializer.data)
-
-
 class RequestStatusesList(generics.ListAPIView):  # Generics views
     queryset = RequestStatus.objects.all()
     serializer_class = RequestStatusSerializer
@@ -43,20 +33,6 @@ class RequestStatusDetails(mixins.RetrieveModelMixin,  # APIView with mixins
 
 
 # Views for request
-@api_view(['GET'])
-def requests_list(request, format=None):  # Function based view
-    if request.method == 'GET':
-        requests = Request.objects.all()
-        serializer = RequestSerializer(requests, many=True)
-        return Response(serializer.data)
-
-
-class RequestsList(generics.ListCreateAPIView):  # Generics views
-    queryset = Request.objects.all()
-    serializer_class = RequestSerializer
-    permission_classes = []
-
-
 class RequestDetails(APIView):  # APIView
     def get_request(self, pk):
         try:
@@ -76,6 +52,7 @@ class RequestDetails(APIView):  # APIView
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk, format=None):
         request = self.get_request(pk)
@@ -99,6 +76,10 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
                                         address=data['address'],total_cost=data['total_cost'])
         new_request.save()
         serializer = RequestSerializer(new_request)
+        return Response(serializer.data)
+
+    def list(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(self.get_queryset())
         return Response(serializer.data)
 
     def update(self, request, pk):

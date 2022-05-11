@@ -1,23 +1,14 @@
-from rest_framework.decorators import api_view
 from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 import sys
-from ..serializers.profiles import UserSerializer, UserRoleSerializer
+from api.serializers import UserSerializer, UserRoleSerializer
 sys.path.append(".")
 from core.models.profiles import User, UserRole
 
 
 # Views for user role
-@api_view(['GET'])
-def user_roles_list(request, format=None):
-    if request.method == 'GET':
-        user_roles = UserRole.objects.all()
-        serializer = UserRoleSerializer(user_roles, many=True)
-        return Response(serializer.data)
-
-
 class UserRolesList(generics.ListAPIView):  # Generics views
     queryset = UserRole.objects.all()
     serializer_class = UserRoleSerializer
@@ -42,20 +33,6 @@ class UserRoleDetails(mixins.RetrieveModelMixin,  # APIView with mixins
 
 
 # Views for user
-@api_view(['GET'])
-def users_list(request, format=None):  # Function based view
-    if request.method == 'GET':
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-
-class UsersList(generics.ListCreateAPIView):  # Generics views
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = []
-
-
 class UserDetails(APIView):  # APIView
     def get_user(self, pk):
         try:
@@ -90,13 +67,17 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         categories = User.objects.all()
         return categories
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs) -> Response:
         data = request.data
 
-        new_user = User.objects.create(name=data["name"], email=data['email'],
+        new_user = User.objects.create(name=data['name'], email=data['email'],
                                            phone=data['phone'], role=data['role'])
         new_user.save()
         serializer = UserSerializer(new_user)
+        return Response(serializer.data)
+
+    def list(self, request: User, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(self.get_queryset())
         return Response(serializer.data)
 
     def update(self, request, pk):

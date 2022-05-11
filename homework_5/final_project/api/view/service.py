@@ -1,31 +1,14 @@
 import sys
-from rest_framework.decorators import api_view
 from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from ..serializers.service import CategorySerializer, ServiceSerializer
-
+from api.serializers.service import CategorySerializer, ServiceSerializer
 sys.path.append(".")
 from core.models.service import Service, Category
 
 
 # Views for category
-@api_view(['GET'])
-def categories_list(request, format=None):
-    if request.method == 'GET':
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
-
-
-class CategoryCreate(generics.CreateAPIView):  # Generics views
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = []
-
-
 class CategoryDetails(mixins.RetrieveModelMixin,  # APIView with mixins
                       mixins.UpdateModelMixin,
                       mixins.DestroyModelMixin,
@@ -59,6 +42,10 @@ class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
         serializer = CategorySerializer(new_category)
         return Response(serializer.data)
 
+    def list(self, request: Category, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(self.get_queryset())
+        return Response(serializer.data)
+
     def update(self, request, pk):
         data = request.data
 
@@ -71,20 +58,6 @@ class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
 
 
 # Views for service
-@api_view(['GET'])
-def services_list(request, format=None):  # Function based view
-    if request.method == 'GET':
-        services = Service.objects.all()
-        serializer = ServiceSerializer(services, many=True)
-        return Response(serializer.data)
-
-
-class ServicesList(generics.ListCreateAPIView):  # Generics views
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-    permission_classes = []
-
-
 class ServiceDetails(APIView):  # APIView
     def get_service(self, pk):
         try:
@@ -141,6 +114,10 @@ class ServiceViewSet(viewsets.ModelViewSet):  # ViewSet
         new_service = Service.objects.create(name=data["name"], cost=data["cost"], category=data["category"])
         new_service.save()
         serializer = ServiceSerializer(new_service)
+        return Response(serializer.data)
+
+    def list(self, request: Service, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(self.get_queryset())
         return Response(serializer.data)
 
     def update(self, request, pk):

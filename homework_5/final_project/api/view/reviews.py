@@ -1,24 +1,14 @@
 import sys
-from rest_framework.decorators import api_view
 from rest_framework import status, generics, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
-from ..serializers.reviews import ReviewSerializer
+from api.serializers.reviews import ReviewSerializer
 sys.path.append(".")
 from core.models.reviews import Review
 
 
 # Views for review
-@api_view(['GET'])
-def reviews_list(request, format=None):  # Function based view
-    if request.method == 'GET':
-        review = Review.objects.all()
-        serializer = ReviewSerializer(review, many=True)
-        return Response(serializer.data)
-
-
 class ReviewsList(generics.ListCreateAPIView):  # Generics views
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
@@ -66,6 +56,10 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
                                            feedback=data['feedback'], rate=data['rate'], created_at=data['created_at'])
         new_review.save()
         serializer = ReviewSerializer(new_review)
+        return Response(serializer.data)
+
+    def list(self, request: Review, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(self.get_queryset())
         return Response(serializer.data)
 
     def update(self, request, pk):

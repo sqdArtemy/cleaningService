@@ -18,10 +18,10 @@ from django.urls import path
 from rest_framework import routers
 import sys
 sys.path.append("..")
-from api.view.profiles import user_roles_list, users_list, UserDetails, UsersList, UserRolesList, UserRoleDetails, UserViewSet
-from api.view.request import request_statuses_list, requests_list,RequestStatusDetails, RequestStatusesList,RequestsList,RequestDetails, RequestViewSet
-from api.view.service import categories_list, CategoryCreate,CategoryDetails, services_list,ServicesList, ServiceDetails, CategoryViewSet, ServiceViewSet
-from api.view.reviews import reviews_list, ReviewDetails, ReviewsList, ReviewViewSet
+from api.view.profiles import UserDetails, UserRolesList, UserRoleDetails, UserViewSet
+from api.view.request import RequestStatusDetails, RequestStatusesList, RequestDetails, RequestViewSet
+from api.view.service import CategoryDetails, ServiceDetails, CategoryViewSet, ServiceViewSet
+from api.view.reviews import ReviewDetails, ReviewViewSet
 
 router = routers.SimpleRouter()
 router.register(r'categories_viewset', CategoryViewSet)
@@ -34,31 +34,24 @@ urlpatterns = router.urls
 urlpatterns += [
     path('admin/', admin.site.urls),
     # User role paths
-    path('user_roles_list/', user_roles_list),
-    path('<pk>/user_role_details/', UserRoleDetails.as_view()),
-    path('generics_user_roles_list', UserRolesList.as_view()),
+    path('user_role/<pk>', UserRoleDetails.as_view()),
+    path('user_roles', UserRolesList.as_view()),
     # User paths
-    path('users_list/', users_list),
-    path('<pk>/user_details/', UserDetails.as_view()),
-    path('generics_users_list/', UsersList.as_view()),
+    path('users/', UserViewSet.as_view({'get': 'list'})),
+    path('user/<pk>', UserDetails.as_view()),
     # Request status paths
-    path('request_statuses_list/', request_statuses_list),
-    path('<pk>/request_status_details/', RequestStatusDetails.as_view()),
+    path('  request_status/<pk>', RequestStatusDetails.as_view()),
     path('generics_request_statuses_list/', RequestStatusesList.as_view()),
     # Request paths
-    path('requests_list/', requests_list),
-    path('<pk>/request_details/', RequestDetails.as_view()),
-    path('generics_requests_list/', RequestsList.as_view()),
+    path('requests/', RequestViewSet.as_view({'get': 'list'})),
+    path('request/<pk>', RequestDetails.as_view()),
     # Review paths
-    path('reviews_list/', reviews_list),
-    path('<pk>/review_details/', ReviewDetails.as_view()),
-    path('generics_reviews_list/', ReviewsList.as_view()),
+    path('review/<pk>', ReviewDetails.as_view()),
+    path('reviews/', ReviewViewSet.as_view({'get': 'list'})),
     # Category oaths
-    path('categories_list/', categories_list),
-    path('<pk>/category_details/', CategoryDetails.as_view()),
-    path('generics_category_create/', CategoryCreate.as_view()),
+    path('categories/', CategoryViewSet.as_view({'get': 'list'})),
+    path('category/<pk>', CategoryDetails.as_view()),
     # Service
-    path('services_list/', services_list),
-    path('<pk>/service_details/', ServiceDetails.as_view()),
-    path('generics_services_list/', ServicesList.as_view()),
+    path('services/', ServiceViewSet.as_view({'get': 'list'})),
+    path('service/<pk>', ServiceDetails.as_view()),
 ]
