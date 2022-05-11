@@ -1,6 +1,6 @@
 import sys
 from rest_framework.decorators import api_view
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -81,4 +81,38 @@ class RequestDetails(APIView):  # APIView
         request = self.get_request(pk)
         request.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
+    serializer_class = RequestSerializer
+    queryset = Request.objects.all()
+
+    def get_queryset(self):
+        requests = Request.objects.all()
+        return requests
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        new_request = Request.objects.create(customer=data["customer"], service=data['service'],
+                                           status=data['status'], total_area=data['total_area'],
+                                        address=data['address'],total_cost=data['total_cost'])
+        new_request.save()
+        serializer = RequestSerializer(new_request)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        data = request.data
+
+        request = self.get_object(pk)
+        request.customer = data["customer"]
+        request.service = data['service']
+        request.status = data['status']
+        request.total_area = data['total_area']
+        request.total_cost = data['total_cost']
+        request.address = data['address']
+        request.save()
+
+        serializer = RequestSerializer(request)
+        return Response(serializer.data)
 

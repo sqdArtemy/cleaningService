@@ -7,4 +7,7 @@ from core.models.reviews import Review
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['id', 'request', 'customer', 'feedback', 'rate', 'created_at']
+        fields = ['request', 'customer', 'feedback', 'rate', 'created_at']
+        customer = serializers.SerializerMethodField()
+        def get_customer(self, request):
+            return request.customer.name

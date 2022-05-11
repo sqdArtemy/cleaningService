@@ -1,6 +1,6 @@
 import sys
 from rest_framework.decorators import api_view
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -49,4 +49,36 @@ class ReviewDetails(APIView):  # APIView
         user = self.get_review(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        categories = Review.objects.all()
+        return categories
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        new_review = Review.objects.create(request=data["request"], customer=data['customer'],
+                                           feedback=data['feedback'], rate=data['rate'], created_at=data['created_at'])
+        new_review.save()
+        serializer = ReviewSerializer(new_review)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        data = request.data
+
+        review = self.get_object(pk)
+        review.request = data["customer"]
+        review.customer = data['customer']
+        review.feedback = data['feedback']
+        review.rate = data['rate']
+        review.created_at = data['created_at']
+        review.save()
+
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
 

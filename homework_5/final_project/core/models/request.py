@@ -21,7 +21,7 @@ class Request(models.Model):
     customer = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
     status = models.ForeignKey(to=RequestStatus, on_delete=models.CASCADE, null=False)
     total_area = models.FloatField(verbose_name="Total area to be cleaned", default=0, null=False)
-    address = models.TimeField(verbose_name="User`s address", null=False)
+    address = models.TextField(verbose_name="User`s address", null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
 
     def __str__(self):

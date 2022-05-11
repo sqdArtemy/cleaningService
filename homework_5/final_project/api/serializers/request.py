@@ -7,10 +7,20 @@ from core.models.request import Request, RequestStatus
 class RequestStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestStatus
-        fields = ['id', 'status']
+        fields = ['status']
 
 
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
-        fields = ['id', 'service', 'customer', 'status', 'total_area', 'address', 'total_cost']
+        fields = ['service', 'customer', 'status', 'total_area', 'address', 'total_cost']
+    status = serializers.SerializerMethodField()
+    customer = serializers.SerializerMethodField()
+    service = serializers.SerializerMethodField()
+    def get_status(self, request):
+        return request.status.status
+    def get_customer(self, request):
+        return request.customer.name
+    def get_service(self, request):
+        return request.service.name
+

@@ -7,10 +7,10 @@ from core.models.service import Service, Category
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'naming']
+        fields = ['naming']
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ['id', 'name', 'cost', 'category']
+        fields = ['name', 'cost', 'category']

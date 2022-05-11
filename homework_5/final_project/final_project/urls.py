@@ -15,14 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
 import sys
 sys.path.append("..")
-from api.view.profiles import user_roles_list, users_list, UserDetails, UsersList, UserRolesList, UserRoleDetails
-from api.view.request import request_statuses_list, requests_list,RequestStatusDetails, RequestStatusesList,RequestsList,RequestDetails
-from api.view.service import categories_list, CategoryCreate,CategoryDetails, services_list,ServicesList, ServiceDetails
-from api.view.reviews import reviews_list, ReviewDetails, ReviewsList
+from api.view.profiles import user_roles_list, users_list, UserDetails, UsersList, UserRolesList, UserRoleDetails, UserViewSet
+from api.view.request import request_statuses_list, requests_list,RequestStatusDetails, RequestStatusesList,RequestsList,RequestDetails, RequestViewSet
+from api.view.service import categories_list, CategoryCreate,CategoryDetails, services_list,ServicesList, ServiceDetails, CategoryViewSet, ServiceViewSet
+from api.view.reviews import reviews_list, ReviewDetails, ReviewsList, ReviewViewSet
 
-urlpatterns = [
+router = routers.SimpleRouter()
+router.register(r'categories_viewset', CategoryViewSet)
+router.register(r'services_viewset', ServiceViewSet)
+router.register(r'users_viewset', UserViewSet)
+router.register(r'review_viewset', ReviewViewSet)
+router.register(r'request_viewset',RequestViewSet)
+urlpatterns = router.urls
+
+urlpatterns += [
     path('admin/', admin.site.urls),
     # User role paths
     path('user_roles_list/', user_roles_list),
@@ -40,15 +49,15 @@ urlpatterns = [
     path('requests_list/', requests_list),
     path('<pk>/request_details/', RequestDetails.as_view()),
     path('generics_requests_list/', RequestsList.as_view()),
-    #Review paths
+    # Review paths
     path('reviews_list/', reviews_list),
     path('<pk>/review_details/', ReviewDetails.as_view()),
     path('generics_reviews_list/', ReviewsList.as_view()),
-    #Category oaths
+    # Category oaths
     path('categories_list/', categories_list),
     path('<pk>/category_details/', CategoryDetails.as_view()),
     path('generics_category_create/', CategoryCreate.as_view()),
-    #Service
+    # Service
     path('services_list/', services_list),
     path('<pk>/service_details/', ServiceDetails.as_view()),
     path('generics_services_list/', ServicesList.as_view()),

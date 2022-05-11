@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -81,3 +81,33 @@ class UserDetails(APIView):  # APIView
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class UserViewSet(viewsets.ModelViewSet):  # ViewSet
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def get_queryset(self):
+        categories = User.objects.all()
+        return categories
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        new_user = User.objects.create(name=data["name"], email=data['email'],
+                                           phone=data['phone'], role=data['role'])
+        new_user.save()
+        serializer = UserSerializer(new_user)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        data = request.data
+
+        user = self.get_object(pk)
+        user.name = data['name']
+        user.email = data['email']
+        user.phone = data['phone']
+        user.role = data['role']
+        user.save()
+
+        serializer = UserSerializer(user)
+        return Response(serializer.data)

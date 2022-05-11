@@ -1,11 +1,12 @@
 import sys
 from rest_framework.decorators import api_view
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, mixins, viewsets
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from ..serializers.service import CategorySerializer, ServiceSerializer
+
 sys.path.append(".")
 from core.models.service import Service, Category
 
@@ -38,8 +39,35 @@ class CategoryDetails(mixins.RetrieveModelMixin,  # APIView with mixins
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-    def delete(self, request,*args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+    def get_queryset(self):
+        categories = Category.objects.all()
+        return categories
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        new_category = Category.objects.create(naming=data["naming"])
+        new_category.save()
+        serializer = CategorySerializer(new_category)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        data = request.data
+
+        category = self.get_object(pk)
+        category.naming = data['naming']
+        category.save()
+
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
 
 
 # Views for service
@@ -81,4 +109,49 @@ class ServiceDetails(APIView):  # APIView
         request = self.get_service(pk)
         request.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
+        serializer_class = CategorySerializer
+        queryset = Category.objects.all()
+
+        def get_queryset(self):
+            categories = Category.objects.all()
+            return categories
+
+        def create(self, request, *args, **kwargs):
+            data = request.data
+
+            new_category = Category.objects.create(name=data["name"], cost=data['cost'], category=data['category'])
+            new_category.save()
+            serializer = CategorySerializer(new_category)
+            return Response(serializer.data)
+
+
+class ServiceViewSet(viewsets.ModelViewSet):  # ViewSet
+    serializer_class = ServiceSerializer
+    queryset = Service.objects.all()
+
+    def get_queryset(self):
+        services = Service.objects.all()
+        return services
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+
+        new_service = Service.objects.create(name=data["name"], cost=data["cost"], category=data["category"])
+        new_service.save()
+        serializer = ServiceSerializer(new_service)
+        return Response(serializer.data)
+
+    def update(self, request, pk):
+        data = request.data
+
+        service = self.get_object(pk)
+        service.name = data['name']
+        service.cost = data['cost']
+        service.category = data['category']
+        service.save()
+
+        serializer = ServiceSerializer(service)
+        return Response(serializer.data)
 
