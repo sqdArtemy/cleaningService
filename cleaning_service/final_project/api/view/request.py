@@ -2,13 +2,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from api.serializers.request import RequestStatusSerializer, RequestSerializer
 from core.models.request import Request, RequestStatus, Service, User
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 
 # Views for request status
 class RequestStatusViewSet(viewsets.ModelViewSet):  # ViewSet
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = RequestStatusSerializer
     queryset = RequestStatus.objects.all()
 

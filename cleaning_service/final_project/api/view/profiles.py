@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from api.serializers import UserSerializer, UserRoleSerializer
 from core.models.profiles import User, UserRole
 from django.shortcuts import get_object_or_404
@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 # Views for user role
 class UserRoleViewSet(viewsets.ModelViewSet):  # ViewSet
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticated)
     serializer_class = UserRoleSerializer
     queryset = UserRole.objects.all()
 
