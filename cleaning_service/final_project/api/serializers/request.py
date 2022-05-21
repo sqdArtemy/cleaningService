@@ -11,10 +11,12 @@ class RequestStatusSerializer(serializers.ModelSerializer):
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
-        fields = ['service', 'customer', 'status', 'total_area', 'address', 'total_cost']
+        fields = ['service', 'customer', 'status', 'total_area', 'address']
+
     status = serializers.SerializerMethodField()
     customer = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
+
     def get_status(self, request):
         return request.status.status
     def get_customer(self, request):

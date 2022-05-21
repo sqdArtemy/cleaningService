@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
@@ -140,6 +140,9 @@ REST_FRAMEWORK = {
          'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
+
+# Custom authentication
+AUTH_USER_MODEL = 'core.User'
 
 # JWT token
 SIMPLE_JWT = {

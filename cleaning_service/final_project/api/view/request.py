@@ -4,6 +4,7 @@ from api.serializers.request import RequestStatusSerializer, RequestSerializer
 from core.models.request import Request, RequestStatus, Service, User
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db.models import F
 
 
 # Views for request status
@@ -28,13 +29,13 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
     queryset = Request.objects.all()
 
     def get_status(self, name):  # Obtaining request status object
-        return RequestStatus.objects.filter(role=name).first()
+        return RequestStatus.objects.filter(status=name).first()
 
     def get_service(self, name):  # Obtaining service object
-        return Service.object.filter(name=name).first()
+        return Service.objects.filter(name=name).first()
 
     def get_user(self, email):  # Obtaining user object
-        return User.object.filter(email=email).first()
+        return User.objects.filter(email=email).first()
 
     def get_queryset(self):
         requests = Request.objects.all()
@@ -59,12 +60,13 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request_object = Request.objects.all()
         request = get_object_or_404(request_object, pk=pk)
 
+        # Updating values in customer instance
         request.customer = self.get_user(data["customer"])
         request.service = self.get_service(data['service'])
         request.status = self.get_status(data['status'])
         request.total_area = data['total_area']
-        request.total_cost = data['total_cost']
         request.address = data['address']
+        request.total_cost = data['total_cost']
         request.save()
 
         serializer = RequestSerializer(request)

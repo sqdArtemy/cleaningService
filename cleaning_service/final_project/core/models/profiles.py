@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
+from core.utility.managers import CustomUserManager
 
 
 ROLES = {  # Roles that can be assigned to user
@@ -14,11 +16,23 @@ class UserRole(models.Model):  # User role (Customer or company)
         return self.role
 
 
-class User(models.Model):  # Base user`s model
+class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
+    username = models.CharField(verbose_name="Username", max_length=30, unique=True)
     name = models.CharField(verbose_name="User`s name", max_length=150, null=False, default="default")
-    email = models.EmailField(verbose_name="User`s email", null=False, default="default@gmail.com")
+    email = models.EmailField(verbose_name="User`s email", null=False, unique=True)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
+
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'name', 'phone', 'password', 'role']
+
+    AbstractBaseUser.is_authenticated = True
 
     def __str__(self):  # Returns comprehensible representation of object
         return self.name

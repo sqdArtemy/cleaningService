@@ -11,11 +11,14 @@ class UserRoleSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('name', 'email', 'phone', 'role')
+        fields = ('username', 'name', 'email', 'phone', 'role')
+
+    username = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     phone = serializers.SerializerMethodField()
+
     def get_role(self, user):
         return user.role.role
     def get_name(self, user):
@@ -24,3 +27,5 @@ class UserSerializer(serializers.ModelSerializer):
         return user.email
     def get_phone(self, user):
         return user.phone
+    def get_username(self, user):
+        return user.username
