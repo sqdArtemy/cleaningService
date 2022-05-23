@@ -11,7 +11,7 @@ class RequestStatusSerializer(serializers.ModelSerializer):
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
-        fields = ['service', 'customer', 'status', 'total_area', 'address']
+        fields = ['service', 'customer', 'status', 'total_area', 'total_cost','address']
 
     status = serializers.SerializerMethodField()
     customer = serializers.SerializerMethodField()

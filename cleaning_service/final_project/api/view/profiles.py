@@ -52,7 +52,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         user_object = User.objects.all()
         user = get_object_or_404(user_object, pk=pk)
         user.name = data['name']
-        user.email = data['email']
+        user.email = user.email
         user.phone = data['phone']
         user.role = self.get_role(data['role'])
         user.password = user.password
