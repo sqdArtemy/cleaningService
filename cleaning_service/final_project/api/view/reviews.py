@@ -12,10 +12,10 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
 
-    def get_user(self, email):
+    def get_user(self, email):  # Obtaining user instance
         return User.objects.filter(email=email).first()
 
-    def get_request(self, id):
+    def get_request(self, id):  # Obtaining request instance
         return Request.objects.filter(id=id).first()
 
     def get_queryset(self):

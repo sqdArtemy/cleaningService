@@ -141,6 +141,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Custom authentication
+AUTH_USER_MODEL = 'core.User'
+
 # JWT token
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
