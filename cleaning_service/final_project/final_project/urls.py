@@ -2,8 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from api.view import UserRoleViewSet, UserViewSet, ReviewViewSet, CategoryViewSet, ServiceViewSet, RequestStatusViewSet, RequestViewSet
+from rest_framework_swagger.views import get_swagger_view
 
-
+# Routers for ViewSets
 router = routers.SimpleRouter()
 router.register(r'categories_viewset', CategoryViewSet)
 router.register(r'services_viewset', ServiceViewSet)
@@ -13,6 +14,9 @@ router.register(r'request_viewset',RequestViewSet)
 router.register(r'user_role_viewset', UserRoleViewSet)
 router.register(r'request_status_viewset',RequestStatusViewSet)
 urlpatterns = router.urls
+
+# Swagger view
+schema_view = get_swagger_view(title='Cleaning Service API')
 
 urlpatterns += [
     path('admin/', admin.site.urls),
@@ -37,8 +41,10 @@ urlpatterns += [
     # Service
     path('services/', ServiceViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('service/<pk>', ServiceViewSet.as_view({'get': 'retrieve', 'delete': 'destroy', 'put': 'update'})),
-    #JWT auth
+    # JWT auth
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    # Swagger
+    path('swagger/', schema_view),
 
 ]

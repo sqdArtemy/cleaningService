@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 
 # Views for user role
 class UserRoleViewSet(viewsets.ModelViewSet):  # ViewSet
-    permission_classes = (IsAuthenticated)
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserRoleSerializer
     queryset = UserRole.objects.all()
 
