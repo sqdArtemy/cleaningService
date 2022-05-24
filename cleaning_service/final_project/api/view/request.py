@@ -43,8 +43,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         data = request.data
 
         new_request = Request.objects.create(customer=self.get_user(data["customer"]), service=self.get_service(data['service']),
-                                           status=self.get_status(data['status']), total_area=data['total_area'],
-                                        address=data['address'],total_cost=data['total_cost'])
+                                             status=self.get_status(data['status']), total_area=data['total_area'],
+                                             address=data['address'])
         new_request.save()
         serializer = RequestSerializer(new_request)
         return Response(serializer.data)
@@ -64,7 +64,6 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request.status = self.get_status(data['status'])
         request.total_area = data['total_area']
         request.address = data['address']
-        request.total_cost = data['total_cost']
         request.save()
 
         serializer = RequestSerializer(request)
