@@ -1,18 +1,21 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-from api.view import UserRoleViewSet, UserViewSet, ReviewViewSet, CategoryViewSet, ServiceViewSet, RequestStatusViewSet, RequestViewSet
+from django.conf import settings
 from rest_framework_swagger.views import get_swagger_view
+from rest_framework import routers
+import debug_toolbar
+from api.view import UserRoleViewSet, UserViewSet, ReviewViewSet, CategoryViewSet, ServiceViewSet, RequestStatusViewSet, RequestViewSet
+
 
 # Routers for ViewSets
 router = routers.SimpleRouter()
-router.register(r'categories_viewset', CategoryViewSet)
-router.register(r'services_viewset', ServiceViewSet)
-router.register(r'users_viewset', UserViewSet)
-router.register(r'review_viewset', ReviewViewSet)
-router.register(r'request_viewset',RequestViewSet)
-router.register(r'user_role_viewset', UserRoleViewSet)
-router.register(r'request_status_viewset',RequestStatusViewSet)
+router.register(r'categories_viewset', CategoryViewSet, basename='Category')
+router.register(r'services_viewset', ServiceViewSet, basename='Service')
+router.register(r'users_viewset', UserViewSet, basename='User')
+router.register(r'review_viewset', ReviewViewSet, basename='Review')
+router.register(r'request_viewset',RequestViewSet, basename='Request')
+router.register(r'user_role_viewset', UserRoleViewSet, basename='UserRole')
+router.register(r'request_status_viewset',RequestStatusViewSet, basename='RequestStatus')
 urlpatterns = router.urls
 
 # Swagger view
@@ -46,5 +49,11 @@ urlpatterns += [
     path('auth/', include('djoser.urls.jwt')),
     # Swagger
     path('swagger/', schema_view),
-
 ]
+
+# Paths only for development mode
+if settings.DEBUG is True:
+    urlpatterns += [
+        # Debug toolbar
+        path('__debug__/', include(debug_toolbar.urls)),
+    ]

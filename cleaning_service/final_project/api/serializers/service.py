@@ -13,13 +13,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = ['name', 'cost', 'category']
 
-    name = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
-    cost = serializers.SerializerMethodField()
 
-    def get_name(self, service):
-        return service.name
     def get_category(self, service):
         return service.category.naming
-    def get_cost(self, service):
-        return service.cost

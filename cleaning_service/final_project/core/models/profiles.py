@@ -23,13 +23,14 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
 
+    # User`s rights
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    objects = CustomUserManager()
+    objects = CustomUserManager()  # Custom object manager for base user overloading
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'email'  # This field is user to log in with
     REQUIRED_FIELDS = ['username', 'name', 'phone', 'password', 'role']
 
     AbstractBaseUser.is_authenticated = True

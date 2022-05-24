@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404
 class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
 
     def get_user(self, email):  # Obtaining user instance
         return User.objects.filter(email=email).first()
