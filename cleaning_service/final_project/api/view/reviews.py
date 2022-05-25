@@ -10,22 +10,21 @@ from django.shortcuts import get_object_or_404
 class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
 
-    def get_user(self, email):  # Obtaining user instance
+    def get_customer(self, email):  # Obtaining user instance
         return User.objects.filter(email=email).first()
 
     def get_request(self, id):  # Obtaining request instance
         return Request.objects.filter(id=id).first()
 
     def get_queryset(self):
-        categories = Review.objects.all()
+        categories = Review.objects.select_related('customer', 'request')
         return categories
 
     def create(self, request, *args, **kwargs):
         data = request.data
 
-        new_review = Review.objects.create(request=self.get_request(data["request"]), customer=self.user(data["customer"]),
+        new_review = Review.objects.create(request=self.get_request(data["request"]), customer=self.get_customer(data["customer"]),
                                            feedback=data['feedback'], rate=data['rate'], created_at=data['created_at'])
         new_review.save()
         serializer = ReviewSerializer(new_review)

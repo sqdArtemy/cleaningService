@@ -11,7 +11,6 @@ from django.db.models import F
 class RequestStatusViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticated,)
     serializer_class = RequestStatusSerializer
-    queryset = RequestStatus.objects.all()
 
     def get_queryset(self):
         request_statuses = Request.objects.all()
@@ -26,7 +25,6 @@ class RequestStatusViewSet(viewsets.ModelViewSet):  # ViewSet
 class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = RequestSerializer
-    queryset = Request.objects.all()
 
     def get_status(self, name):  # Obtaining request status object
         return RequestStatus.objects.filter(status=name).first()
@@ -38,15 +36,15 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         return User.objects.filter(email=email).first()
 
     def get_queryset(self):
-        requests = Request.objects.all()
+        requests = Request.objects.select_related('customer', 'service', 'status')
         return requests
 
     def create(self, request, *args, **kwargs):
         data = request.data
 
         new_request = Request.objects.create(customer=self.get_user(data["customer"]), service=self.get_service(data['service']),
-                                           status=self.get_status(data['status']), total_area=data['total_area'],
-                                        address=data['address'],total_cost=data['total_cost'])
+                                             status=self.get_status(data['status']), total_area=data['total_area'],
+                                             address=data['address'])
         new_request.save()
         serializer = RequestSerializer(new_request)
         return Response(serializer.data)
@@ -66,7 +64,6 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request.status = self.get_status(data['status'])
         request.total_area = data['total_area']
         request.address = data['address']
-        request.total_cost = data['total_cost']
         request.save()
 
         serializer = RequestSerializer(request)

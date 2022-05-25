@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404
 class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()
 
     def get_queryset(self):
         categories = Category.objects.all()
@@ -25,13 +24,12 @@ class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
 class ServiceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ServiceSerializer
-    queryset = Service.objects.all()
 
     def get_category(self, name):  # Obtaining category instance
         return Category.objects.filter(naming=name)
 
     def get_queryset(self):
-        services = Service.objects.all()
+        services = Service.objects.select_related('category')
         return services
 
     def create(self, request, *args, **kwargs):

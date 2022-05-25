@@ -24,5 +24,10 @@ class Request(models.Model):
     address = models.TextField(verbose_name="User`s address", null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
 
+    # Overloading method save for calculating total cost of the request
+    def save(self, *args, **kwargs):
+        self.total_cost = float(self.total_area) * float(self.service.cost)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.address
