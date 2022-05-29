@@ -8,10 +8,10 @@ class UserRoleSerializer(serializers.ModelSerializer):
         fields = ['role']
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'name', 'email', 'phone', 'role')
+        fields = ('username', 'name', 'email', 'phone', 'role',)
 
     role = serializers.SerializerMethodField()
 

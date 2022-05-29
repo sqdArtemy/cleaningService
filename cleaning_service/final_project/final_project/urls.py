@@ -1,27 +1,26 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
-from rest_framework_swagger.views import get_swagger_view
-from rest_framework import routers
+from rest_framework import permissions
 import debug_toolbar
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 from api.view import UserRoleViewSet, UserViewSet, ReviewViewSet, CategoryViewSet, ServiceViewSet, RequestStatusViewSet, RequestViewSet
 
 
-# Routers for ViewSets
-router = routers.SimpleRouter()
-router.register(r'categories_viewset', CategoryViewSet, basename='Category')
-router.register(r'services_viewset', ServiceViewSet, basename='Service')
-router.register(r'users_viewset', UserViewSet, basename='User')
-router.register(r'review_viewset', ReviewViewSet, basename='Review')
-router.register(r'request_viewset',RequestViewSet, basename='Request')
-router.register(r'user_role_viewset', UserRoleViewSet, basename='UserRole')
-router.register(r'request_status_viewset',RequestStatusViewSet, basename='RequestStatus')
-urlpatterns = router.urls
-
 # Swagger view
-schema_view = get_swagger_view(title='Cleaning Service API')
+schema_view = get_schema_view(
+   openapi.Info(
+      title="Cleaning service API",
+      default_version='v1',
+      description="API for cleaning service companies and customers who can create requestes for cleaning their places",
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny, ),
+)
 
-urlpatterns += [
+urlpatterns = [
     path('admin/', admin.site.urls),
     # User role paths
     path('user_roles/', UserRoleViewSet.as_view({'get': 'list'})),
@@ -48,7 +47,9 @@ urlpatterns += [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     # Swagger
-    path('swagger/', schema_view),
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
 # Paths only for development mode

@@ -11,8 +11,8 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ReviewSerializer
 
-    def get_customer(self, email):  # Obtaining user instance
-        return User.objects.filter(email=email).first()
+    def get_customer(self, username):  # Obtaining user instance
+        return User.objects.filter(username=username).first()
 
     def get_request(self, id):  # Obtaining request instance
         return Request.objects.filter(id=id).first()
@@ -39,8 +39,8 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
         review_object = Review.objects.all()
         review = get_object_or_404(review_object, pk=pk)
 
-        review.request = self.get_request(data["request"])
-        review.customer = self.get_user(data['customer'])
+        review.request = review.request
+        review.customer = review.customer
         review.feedback = data['feedback']
         review.rate = data['rate']
         review.created_at = data['created_at']

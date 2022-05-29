@@ -11,6 +11,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     request = serializers.SerializerMethodField()
 
     def get_customer(self, review):
-        return review.customer.name
+        return review.customer.username
     def get_request(self, review):
         return review.request.id

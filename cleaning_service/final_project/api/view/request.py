@@ -13,7 +13,7 @@ class RequestStatusViewSet(viewsets.ModelViewSet):  # ViewSet
     serializer_class = RequestStatusSerializer
 
     def get_queryset(self):
-        request_statuses = Request.objects.all()
+        request_statuses = RequestStatus.objects.all()
         return request_statuses
 
     def list(self, request: Request, *args, **kwargs) -> Response:
@@ -32,8 +32,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
     def get_service(self, name):  # Obtaining service object
         return Service.objects.filter(name=name).first()
 
-    def get_user(self, email):  # Obtaining user object
-        return User.objects.filter(email=email).first()
+    def get_user(self, username):  # Obtaining user object
+        return User.objects.filter(username=username).first()
 
     def get_queryset(self):
         requests = Request.objects.select_related('customer', 'service', 'status')
@@ -59,8 +59,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request = get_object_or_404(request_object, pk=pk)
 
         # Updating values in customer instance
-        request.customer = self.get_user(data["customer"])
-        request.service = self.get_service(data['service'])
+        request.customer = request.customer
+        request.service = request.service
         request.status = self.get_status(data['status'])
         request.total_area = data['total_area']
         request.address = data['address']
