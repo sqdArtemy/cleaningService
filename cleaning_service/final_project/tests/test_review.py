@@ -5,9 +5,11 @@ import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
 from .factories import ReviewFactory
-from core.models import Review
+from core.models import Review, User
 sys.path.append('..')
 from api.view import ReviewViewSet
+from .default_tests import default_test_delete, default_test_list, default_test_retrieve
+from django.forms.models import model_to_dict
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
@@ -24,51 +26,17 @@ class TestReview:
     endpoint = '/reviews/'  # Needed endpoints
     ReviewViewSet.permission_classes = [permissions.AllowAny]
 
-    def test_list(self, api_client):  # <----------Tests list-view
-        ReviewFactory.create_batch(10)  # Creates 10 random users
-
-        response = api_client.get(self.endpoint)
-
-        # Comparing results
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 10
+    def test_list(self, rf):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=ReviewFactory,
+                          endpoint=self.endpoint, viewset=ReviewViewSet)
 
     def test_retrieve(self, mocker, rf):  # <----------Tests getting only 1 item
-        # Arrange
-        review = ReviewFactory()
-        url = f'{self.endpoint[0:-2]}/{review.id}'
-        request = rf.get(url)
-
-        expected_json = {  # Data for comparison
-            'feedback': review.feedback,
-            'rate': review.rate,
-            'created_at': json.dumps(review.created_at, indent=4, sort_keys=True, default=str),
-            'customer': review.customer.username,
-            'request': review.request.id,
-        }
-
-        view = ReviewViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=review.id).render()
-
-        # Formatting timedate field
-        json_response = json.loads(response.content)
-        json_response['created_at'] = json.dumps(json_response['created_at'], indent=4, sort_keys=True, default=str)
-        json_response['created_at'] = json_response['created_at'].replace('Z', '').replace('T', " ")
-
-        # Comparing results
-        assert response.status_code == 200
-        assert json_response == expected_json
+        default_test_retrieve(api_client=rf, factory=ReviewFactory, endpoint='review', viewset=ReviewViewSet,
+                              foreign_keys={'customer': User}, has_date=True)
 
     def test_delete(self, api_client):  # <----------Tests deleting functionality
-        # Arrange
-        review = ReviewFactory()
-        url = f'{self.endpoint[0:-2]}/{review.id}'
-
-        response = api_client.delete(url)
-
-        # Comparing results
-        assert response.status_code == 204
-        assert Review.objects.all().count() == 0
+        default_test_delete(api_client=api_client, endpoint='/review',
+                            factory=ReviewFactory(), model=Review)
 
     def test_create(self, api_client):  # <----------Tests creating an instance functionality
         review = ReviewFactory()

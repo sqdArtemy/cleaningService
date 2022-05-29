@@ -5,9 +5,10 @@ import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
 from .factories import ServiceFactory, CategoryFactory
-from core.models import Service, Category
+from core.models import Service, Category, User
 sys.path.append('..')
 from api.view import ServiceViewSet, CategoryViewSet
+from .default_tests import default_test_list, default_test_delete, default_test_retrieve
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
@@ -25,35 +26,10 @@ class TestCategory:
     endpoint = '/categories/'  # Needed endpoints
 
     def test_list(self, mocker, rf):  # <----------Tests list-view
-        # Arrange
-        url = self.endpoint
-        request = rf.get(url)
-
-        CategoryFactory.create_batch(5)  # Creating test objects
-
-        view = CategoryViewSet.as_view({'get': 'list'})
-        response = view(request).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 5
+        default_test_list(api_client=rf, factory=CategoryFactory, endpoint=self.endpoint, viewset=CategoryViewSet)
 
     def test_retrieve(self, rf):  # <----------Tests getting only 1 item
-        # Arrange
-        category = CategoryFactory()
-        url = f'/category/{category.id}'
-        request = rf.get(url)
-
-        expected_json = {
-            'naming': category.naming,
-        }
-
-        view = CategoryViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=category.id).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert json.loads(response.content) == expected_json
+        default_test_retrieve(api_client=rf, viewset=CategoryViewSet, endpoint='category', factory=CategoryFactory)
 
 
 # Tests for users
@@ -61,45 +37,15 @@ class TestService:
     ServiceViewSet.permission_classes = (permissions.AllowAny,)
     endpoint = '/services/'  # Needed endpoints
 
-    def test_list(self, api_client):  # <----------Tests list-view
-        ServiceFactory.create_batch(10)  # Creates 10 random users
-
-        response = api_client.get(self.endpoint)
-
-        # Comparing results
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 10
+    def test_list(self, rf):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=ServiceFactory, endpoint=self.endpoint, viewset=ServiceViewSet)
 
     def test_retrieve(self, mocker, rf):  # <----------Tests getting only 1 item
-        # Arrange
-        service = ServiceFactory()
-        url = f'{self.endpoint[0:-2]}/{service.id}'
-        request = rf.get(url)
-
-        expected_json = {  # Data for comparison
-            'name': service.name,
-            'cost': service.cost,
-            'category': service.category.naming,
-            'company': service.company.username,
-        }
-
-        view = ServiceViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=service.id).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert json.loads(response.content) == expected_json
+        default_test_retrieve(api_client=rf, factory=ServiceFactory, endpoint='service',
+                              viewset=ServiceViewSet, foreign_keys={'category': Category, 'company': User})
 
     def test_delete(self, api_client):  # <----------Tests deleting functionality
-        # Arrange
-        service = ServiceFactory()
-        url = f'{self.endpoint[0:-2]}/{service.id}'
-
-        response = api_client.delete(url)
-
-        # Comparing results
-        assert response.status_code == 204
-        assert Service.objects.all().count() == 0
+        default_test_delete(api_client=api_client, endpoint='/service', factory=ServiceFactory(), model=Service)
 
     def test_create(self, api_client):  # <----------Tests creating an instance functionality
         service = ServiceFactory()

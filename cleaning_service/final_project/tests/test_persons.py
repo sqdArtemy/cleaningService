@@ -8,6 +8,8 @@ from .factories import UserRoleFactory, UsersFactory
 from core.models import User, UserRole
 sys.path.append('..')
 from api.view import UserViewSet, UserRoleViewSet
+from .default_tests import default_test_delete, default_test_list, default_test_retrieve
+
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
@@ -23,36 +25,11 @@ class TestUserRole:
     endpoint = '/user_roles/'  # Needed endpoints
     UserRoleViewSet.permission_classes = (permissions.AllowAny,)
 
-    def test_list(self, mocker, rf):  # <----------Tests list-view
-        # Arrange
-        url = self.endpoint
-        request = rf.get(url)
-
-        UserRoleFactory.create_batch(2) # Creating test objects
-
-        view = UserRoleViewSet.as_view({'get': 'list'})
-        response = view(request).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 2
+    def test_list(self, rf):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=UserRoleFactory, endpoint=self.endpoint, viewset=UserRoleViewSet)
 
     def test_retrieve(self, rf):  # <----------Tests getting only 1 item
-        # Arrange
-        user_role = UserRoleFactory()
-        url = f'{self.endpoint[0:-2]}/{user_role.id}'
-        request = rf.get(url)
-
-        expected_json = {
-            'role': user_role.role,
-        }
-
-        view = UserRoleViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=user_role.id).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert json.loads(response.content) == expected_json
+        default_test_retrieve(api_client=rf, factory=UserRoleFactory, endpoint='user_role', viewset=UserRoleViewSet)
 
 
 # Tests for users
@@ -60,46 +37,14 @@ class TestUser:
     UserViewSet.permission_classes = (permissions.AllowAny,)
     endpoint = '/users/'  # Needed endpoints
 
-    def test_list(self, api_client):  # <----------Tests list-view
-        UsersFactory.create_batch(10)  # Creates 10 random users
+    def test_list(self, rf):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=UsersFactory, endpoint=self.endpoint, viewset=UserViewSet)
 
-        response = api_client. get(self.endpoint)
-
-        # Comparing results
-        assert response.status_code == 200
-        assert len(json.loads(response.content)) == 10
-
-    def test_retrieve(self, mocker, rf):  # <----------Tests getting only 1 item
-        # Arrange
-        user = UsersFactory()
-        url = f'{self.endpoint[0:-2]}/{user.id}'
-        request = rf.get(url)
-
-        expected_json = {  # Data for comparison
-            'name': user.name,
-            'username': user.username,
-            'phone': user.phone,
-            'email': user.email,
-            'role': user.role.role,
-        }
-
-        view = UserViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=user.id).render()
-
-        # Comparing results
-        assert response.status_code == 200
-        assert json.loads(response.content) == expected_json
+    def test_retrieve(self, rf):  # <----------Tests getting only 1 item
+        default_test_retrieve(api_client=rf, factory=UsersFactory, endpoint='user', viewset=UserViewSet, foreign_keys={'role': UserRole})
 
     def test_delete(self, api_client):  # <----------Tests deleting functionality
-        # Arrange
-        user = UsersFactory()
-        url = f'{self.endpoint[0:-2]}/{user.id}'
-
-        response = api_client.delete(url)
-
-        # Comparing results
-        assert response.status_code == 204
-        assert User.objects.all().count() == 0
+        default_test_delete(api_client=api_client, endpoint='/user', factory=UsersFactory(), model=User)
 
     def test_create(self, mocker, rf):  # <----------Tests creating an instance functionality
         valid_data_dict = factory.build(
