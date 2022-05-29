@@ -1,6 +1,5 @@
 import pytest
 import json
-import factory
 import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
@@ -9,7 +8,6 @@ from core.models import Review, User
 sys.path.append('..')
 from api.view import ReviewViewSet
 from .default_tests import default_test_delete, default_test_list, default_test_retrieve
-from django.forms.models import model_to_dict
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
