@@ -4,8 +4,8 @@ import factory
 import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
-from .factories import ReviewFactory, create_sample_user, create_sample_request, RequestFactory
-from core.models import Request, RequestStatus, Review, User, UserRole, Service
+from .factories import ReviewFactory
+from core.models import Review
 sys.path.append('..')
 from api.view import ReviewViewSet
 
@@ -70,37 +70,30 @@ class TestReview:
         assert response.status_code == 204
         assert Review.objects.all().count() == 0
 
-    def test_create(self, mocker, rf):  # <----------Tests creating an instance functionality
-        valid_data_dict = factory.build(
-            dict,
-            FACTORY_CLASS=ReviewFactory
-        )  # Creates dictionary with data of the model
+    def test_create(self, api_client):  # <----------Tests creating an instance functionality
+        review = ReviewFactory()
 
-        customer = create_sample_user(valid_data_dict['customer'])
-        my_request = create_sample_request(valid_data_dict['request'], customer)
+        # Formatting date
+        date = json.dumps(review.created_at, indent=4, sort_keys=True, default=str)
+        date = date.replace(' ', 'T').replace('"', '') + 'Z'
 
-        # Formats field in order to suit a constructor
-        valid_data_dict['customer'] = valid_data_dict['customer'].username
-        valid_data_dict['request'] = my_request.id
-        valid_data_dict['created_at'] = json.dumps(valid_data_dict['created_at'], indent=4, sort_keys=True, default=str)
-        valid_data_dict['created_at'] = valid_data_dict['created_at'].replace(' ', 'T').replace('"', '') + 'Z'
+        expected_json = {
+            'feedback': review.feedback,
+            'rate': review.rate,
+            'customer': review.customer.username,
+            'created_at': date,
+            'request': review.request.id,
+        }
 
-        mocker.patch.object(Review, 'save')
-
-        url = f'{self.endpoint}'
-
-        request = rf.post(
-            url,
-            content_type='application/json',
-            data=json.dumps(valid_data_dict)
+        response = api_client.post(
+            path=self.endpoint,
+            data=expected_json,
+            format='json'
         )
 
-        view = ReviewViewSet.as_view({'post': 'create'})
-        response = view(request).render()
-
-        # Testing if results are equal
-        assert response.status_code == 200 or response.status_code == 201
-        assert json.loads(response.content) == valid_data_dict
+        # Comparing results
+        assert response.status_code == 200
+        assert json.loads(response.content) == expected_json
 
     def test_update(self, mocker, rf):   # <----------Tests updating an instance functionality
         old_review = ReviewFactory()

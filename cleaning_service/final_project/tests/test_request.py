@@ -4,8 +4,8 @@ import factory
 import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
-from .factories import RequestFactory, RequestStatusFactory, create_sample_user, create_sample_service
-from core.models import Service, Category, Request, RequestStatus
+from .factories import RequestFactory, RequestStatusFactory
+from core.models import Request, RequestStatus
 sys.path.append('..')
 from api.view import RequestViewSet, RequestStatusViewSet
 
@@ -103,37 +103,27 @@ class TestRequest:
         assert response.status_code == 204
         assert Request.objects.all().count() == 0
 
-    def test_create(self, mocker, rf):  # <----------Tests creating an instance functionality
-        valid_data_dict = factory.build(
-            dict,
-            FACTORY_CLASS=RequestFactory
-        )  # Creates dictionary with data of the model
+    def test_create(self, api_client):  # <----------Tests creating an instance functionality
+        request = RequestFactory()
 
-        create_sample_user(valid_data_dict['customer'])
-        create_sample_service(valid_data_dict['service'])  # Instance of a service
-        RequestStatus.objects.create(id=valid_data_dict['status'].id, status=valid_data_dict['status'].status)
+        expected_json = {
+            'status': request.status.status,
+            'customer': request.customer.username,
+            'service': request.service.name,
+            'total_area': request.total_area,
+            'total_cost': request.total_cost,
+            'address': request.address,
+        }
 
-        valid_data_dict['customer'] = valid_data_dict['customer'].username
-        valid_data_dict['status'] = valid_data_dict['status'].status
-        valid_data_dict['service'] = valid_data_dict['service'].name
-        url = f'{self.endpoint}'
-
-        request = rf.post(
-            url,
-            content_type='application/json',
-            data=json.dumps(valid_data_dict)
+        response = api_client.post(
+            path=self.endpoint,
+            data=expected_json,
+            format='json'
         )
 
-        view = RequestViewSet.as_view({'post': 'create'})
-        response = view(request).render()
-
-        # Deleting total cost because it depends on a service which is different in both cases
-        json_response = json.loads(response.content)
-        del json_response['total_cost']
-
-        # Testing if results are equal
-        assert response.status_code == 200 or response.status_code == 201
-        assert json_response == valid_data_dict
+        # Comparing results
+        assert response.status_code == 200
+        assert json.loads(response.content) == expected_json
 
     def test_update(self, mocker, rf):   # <----------Tests updating an instance functionality
         old_request = RequestFactory()

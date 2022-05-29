@@ -108,12 +108,10 @@ class TestUser:
         )  # Creates dictionary with data of the model
 
         UserRoleFactory.create_batch(4)
-
         valid_data_dict['role'] = valid_data_dict['role'].role
-        url = f'{self.endpoint}'
 
         request = rf.post(
-            url,
+            path=self.endpoint,
             content_type='application/json',
             data=json.dumps(valid_data_dict)
         )

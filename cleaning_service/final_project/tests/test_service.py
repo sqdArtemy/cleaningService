@@ -4,8 +4,8 @@ import factory
 import sys
 from rest_framework.test import APIClient
 from rest_framework import permissions
-from .factories import ServiceFactory, CategoryFactory, UsersFactory, create_sample_user
-from core.models import Service, Category, User, UserRole
+from .factories import ServiceFactory, CategoryFactory
+from core.models import Service, Category
 sys.path.append('..')
 from api.view import ServiceViewSet, CategoryViewSet
 
@@ -101,35 +101,25 @@ class TestService:
         assert response.status_code == 204
         assert Service.objects.all().count() == 0
 
-    def test_create(self, mocker, rf):  # <----------Tests creating an instance functionality
-        valid_data_dict = factory.build(
-            dict,
-            FACTORY_CLASS=ServiceFactory
-        )  # Creates dictionary with data of the model
+    def test_create(self, api_client):  # <----------Tests creating an instance functionality
+        service = ServiceFactory()
 
-        UsersFactory.create_batch(5)
+        expected_json = {
+            'name': service.name,
+            'cost': service.cost,
+            'category': service.category.naming,
+            'company': service.company.username,
+        }
 
-        # Creating instances of objects
-        Category.objects.create(id=valid_data_dict['category'].id, naming=valid_data_dict['category'].naming)
-        create_sample_user(valid_data_dict['company'])  # Creates sample object of a user
-
-        valid_data_dict['company'] = valid_data_dict['company'].username
-        valid_data_dict['category'] = valid_data_dict['category'].naming
-        url = f'{self.endpoint}'
-
-
-        request = rf.post(
-            url,
-            content_type='application/json',
-            data=json.dumps(valid_data_dict)
+        response = api_client.post(
+            self.endpoint,
+            data=expected_json,
+            format='json'
         )
 
-        view = ServiceViewSet.as_view({'post': 'create'})
-        response = view(request).render()
-
-        # Testing if results are equal
-        assert response.status_code == 200 or response.status_code == 201
-        assert json.loads(response.content) == valid_data_dict
+        # Comparing results
+        assert response.status_code == 200
+        assert json.loads(response.content) == expected_json
 
     def test_update(self, mocker, rf):   # <----------Tests updating an instance functionality
         old_service = ServiceFactory()
