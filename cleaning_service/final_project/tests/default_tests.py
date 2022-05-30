@@ -75,8 +75,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
     # Formatting date
     if has_date is not None:
         date = json.dumps(obj.created_at, indent=4, sort_keys=True, default=str)
-        date = date.replace(' ', 'T').replace('"', '') + 'Z'
-        expected_json['created_at'] = date
+        expected_json['created_at'] = date.replace(' ', 'T').replace('"', '') + 'Z'
 
     if foreign_keys is not None:  # Substituting foreign keys ID`s with serializer`s representation
         for item in foreign_keys.keys():
@@ -97,8 +96,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
 # Default test for cse if object is not found
 def default_test_not_found(api_client, model, factory, endpoint, viewset, get_token):
     obj = factory()
-    url = f'/{endpoint}/{obj.id}'
-    request = api_client.get(url, HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
+    request = api_client.get(f'/{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
     expected_json = model_to_dict(instance=obj)
 

@@ -88,9 +88,8 @@ class TestUser:
 
         UserRole.objects.create(role=old_user.role)  # Recreating user role in DB
 
-        url = f'{self.endpoint[0:-2]}/{old_user.id}'
         request = rf.put(
-            url,
+            path=f'{self.endpoint[0:-2]}/{old_user.id}',
             content_type='application/json',
             data=json.dumps(user_dict),
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)

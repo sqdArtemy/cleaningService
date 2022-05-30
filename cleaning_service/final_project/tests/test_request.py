@@ -63,9 +63,8 @@ class TestRequest:
             'address': new_request.address,
         }
 
-        url = f'{self.endpoint[0:-2]}/{old_request.id}'
         request = rf.put(
-            url,
+            path=f'{self.endpoint[0:-2]}/{old_request.id}',
             content_type='application/json',
             data=json.dumps(request_dict),
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
