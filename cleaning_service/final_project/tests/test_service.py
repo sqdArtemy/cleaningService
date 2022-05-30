@@ -1,72 +1,58 @@
 import pytest
 import json
 import sys
-from rest_framework.test import APIClient
-from rest_framework import permissions
+from .fixtures import api_client, get_token
 from .factories import ServiceFactory, CategoryFactory
 from core.models import Service, Category, User
 sys.path.append('..')
 from api.view import ServiceViewSet, CategoryViewSet
-from .default_tests import default_test_list, default_test_delete, default_test_retrieve
+from .default_tests import default_test_list, default_test_delete, default_test_retrieve, default_test_create, \
+    default_test_not_found, default_test_not_authorized
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
 
-@pytest.fixture  # Let us interact with DRF endpoints
-def api_client():
-    client = APIClient()
-    # client.credentials(HTTP_AUTHORIZATION='Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjUzNzQwOTY0LCJpYXQiOjE2NTM3NDA2NjQsImp0aSI6ImUwOGI1NWIzYzk5YTQ5NTNiZjFlNmZjNjgwMzRlMmMxIiwidXNlcl9pZCI6Mn0.m1k2OJ8a559LUFyzem-qmEilQIn0lY7B9n4fYhqvJUQ")
-    return client
-
-
 # Tests for user roles
 class TestCategory:
-    CategoryViewSet.permission_classes = (permissions.AllowAny,)
     endpoint = '/categories/'  # Needed endpoints
 
-    def test_list(self, mocker, rf):  # <----------Tests list-view
-        default_test_list(api_client=rf, factory=CategoryFactory, endpoint=self.endpoint, viewset=CategoryViewSet)
+    def test_list(self, rf, get_token):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=CategoryFactory, endpoint=self.endpoint, viewset=CategoryViewSet,
+                          get_token=get_token)
 
-    def test_retrieve(self, rf):  # <----------Tests getting only 1 item
-        default_test_retrieve(api_client=rf, viewset=CategoryViewSet, endpoint='category', factory=CategoryFactory)
+    def test_retrieve(self, rf, get_token):  # <----------Tests getting only 1 item
+        default_test_retrieve(api_client=rf, viewset=CategoryViewSet, endpoint='category', factory=CategoryFactory,
+                              get_token=get_token)
 
 
 # Tests for users
 class TestService:
-    ServiceViewSet.permission_classes = (permissions.AllowAny,)
     endpoint = '/services/'  # Needed endpoints
 
-    def test_list(self, rf):  # <----------Tests list-view
-        default_test_list(api_client=rf, factory=ServiceFactory, endpoint=self.endpoint, viewset=ServiceViewSet)
+    def test_list(self, rf, get_token):  # <----------Tests list-view
+        default_test_list(api_client=rf, factory=ServiceFactory, endpoint=self.endpoint, viewset=ServiceViewSet,
+                          get_token=get_token)
 
-    def test_retrieve(self, mocker, rf):  # <----------Tests getting only 1 item
-        default_test_retrieve(api_client=rf, factory=ServiceFactory, endpoint='service',
+    def test_retrieve(self, mocker, rf, get_token):  # <----------Tests getting only 1 item
+        default_test_retrieve(api_client=rf, factory=ServiceFactory, endpoint='service',get_token=get_token,
                               viewset=ServiceViewSet, foreign_keys={'category': Category, 'company': User})
 
-    def test_delete(self, api_client):  # <----------Tests deleting functionality
-        default_test_delete(api_client=api_client, endpoint='/service', factory=ServiceFactory(), model=Service)
+    def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
+        default_test_delete(api_client=api_client, endpoint='/service', factory=ServiceFactory(), model=Service,
+                            get_token=get_token)
 
-    def test_create(self, api_client):  # <----------Tests creating an instance functionality
-        service = ServiceFactory()
+    def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality
+        default_test_create(api_client=api_client, endpoint=self.endpoint, factory=ServiceFactory, model=Service,
+                            foreign_keys={'category': Category, 'company': User}, get_token=get_token)
 
-        expected_json = {
-            'name': service.name,
-            'cost': service.cost,
-            'category': service.category.naming,
-            'company': service.company.username,
-        }
+    def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
+        default_test_not_found(api_client=rf, model=Service, viewset=ServiceViewSet, factory=ServiceFactory,
+                               endpoint='service', get_token=get_token)
 
-        response = api_client.post(
-            self.endpoint,
-            data=expected_json,
-            format='json'
-        )
+    def test_not_authenticated(self, api_client):
+        default_test_not_authorized(api_client=api_client, model=Service, factory=ServiceFactory, endpoint='service')
 
-        # Comparing results
-        assert response.status_code == 200
-        assert json.loads(response.content) == expected_json
-
-    def test_update(self, mocker, rf):   # <----------Tests updating an instance functionality
+    def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
         old_service = ServiceFactory()
         new_service = ServiceFactory()
         service_dict = {
@@ -76,11 +62,11 @@ class TestService:
             'company': old_service.company.username,
         }
 
-        url = f'{self.endpoint[0:-2]}/{old_service.id}'
         request = rf.put(
-            url,
+            path=f'{self.endpoint[0:-2]}/{old_service.id}',
             content_type='application/json',
-            data=json.dumps(service_dict)
+            data=json.dumps(service_dict),
+            HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
 
         # Mocking
