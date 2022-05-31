@@ -20,7 +20,7 @@ class RequestSerializer(serializers.ModelSerializer):
     def get_status(self, request):
         return request.status.status
     def get_customer(self, request):
-        return request.customer.name
+        return request.customer.username
     def get_service(self, request):
         return request.service.name
 

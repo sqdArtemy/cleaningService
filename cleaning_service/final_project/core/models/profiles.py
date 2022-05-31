@@ -33,7 +33,5 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     USERNAME_FIELD = 'email'  # This field is user to log in with
     REQUIRED_FIELDS = ['username', 'name', 'phone', 'password', 'role']
 
-    AbstractBaseUser.is_authenticated = True
-
     def __str__(self):  # Returns comprehensible representation of object
-        return self.name
+        return self.username

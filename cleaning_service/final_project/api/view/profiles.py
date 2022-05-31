@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from api.serializers import UserSerializer, UserRoleSerializer
+from api.serializers import CustomUserSerializer, UserRoleSerializer
 from core.models.profiles import User, UserRole
 from django.shortcuts import get_object_or_404
 
@@ -23,7 +23,7 @@ class UserRoleViewSet(viewsets.ModelViewSet):  # ViewSet
 # Views for user
 class UserViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    serializer_class = UserSerializer
+    serializer_class = CustomUserSerializer
 
     def get_role(self, name):  # Obtaining user role object
         return UserRole.objects.filter(role=name).first()
@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
                                             phone=data['phone'], role=self.get_role(data['role']),
                                             username=data['username'], password=data['password'])
         new_user.save()
-        serializer = UserSerializer(new_user)
+        serializer = CustomUserSerializer(new_user)
         return Response(serializer.data)
 
     def list(self, request: User, *args, **kwargs) -> Response:
@@ -48,15 +48,15 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
 
     def update(self, request, pk, *args, **kwargs):
         data = request.data
-        user_object = User.objects.all()
+        user_object = self.get_queryset()
         user = get_object_or_404(user_object, pk=pk)
-        user.username = data['name']
+        user.username = data['username']
         user.name = data['name']
         user.email = user.email
         user.phone = data['phone']
-        user.role = self.get_role(data['role'])
+        user.role = user.role
         user.set_password(user.password)
         user.save()
 
-        serializer = UserSerializer(user)
+        serializer = CustomUserSerializer(user)
         return Response(serializer.data)
