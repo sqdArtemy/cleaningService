@@ -3,6 +3,7 @@ import os
 
 from celery import Celery
 from django.conf import settings
+from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'final_project.settings.settings')
 
@@ -14,6 +15,14 @@ app.config_from_object(settings, namespace='CELERY')
 
 
 # Celery beat settings
+app.conf.beat_schedule = {
+    'test-task-every-5s': {
+        'task': 'core.tasks.test_func',
+        'schedule': crontab(hour=22, minute=7),
+        #'args': (),
+    }
+}
+
 app.autodiscover_tasks()
 
 @app.task(bind=True)

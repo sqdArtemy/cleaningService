@@ -4,5 +4,5 @@ from celery import shared_task
 def test_func(self):
     for i in range(10):
         print(i)
-        print('spanking')
+        print('testing')
     return "Done"
