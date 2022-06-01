@@ -16,9 +16,9 @@ app.config_from_object(settings, namespace='CELERY')
 
 # Celery beat settings
 app.conf.beat_schedule = {
-    'test-task-every-5s': {
+    'test-task-every-10-seconds': {
         'task': 'core.tasks.test_func',
-        'schedule': crontab(hour=22, minute=7),
+        'schedule': 10.0,
         #'args': (),
     }
 }
