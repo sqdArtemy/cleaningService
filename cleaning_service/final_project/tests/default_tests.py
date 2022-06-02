@@ -65,12 +65,11 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
     assert response.status_code == 200
     assert json_response == expected_json
 
+
 def default_test_create(api_client, factory, endpoint, model, get_token, foreign_keys=None, has_date=None):
     obj = factory()
 
-    expected_json = model_to_dict(instance=obj,
-                                  exclude=("id", "password", "is_active", 'is_staff', 'is_superuser',
-                                           'last_login', 'groups', 'user_permissions'))
+    expected_json = model_to_dict(instance=obj, exclude="id")
 
     # Formatting date
     if has_date is not None:
@@ -92,6 +91,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
     assert response.status_code == 200
     assert json.loads(response.content) == expected_json
     assert model.objects.count() == 2
+
 
 # Default test for cse if object is not found
 def default_test_not_found(api_client, model, factory, endpoint, viewset, get_token):

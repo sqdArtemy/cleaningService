@@ -6,6 +6,24 @@ sys.path.append('..')
 from core.models import User, UserRole, Request, RequestStatus, Service, Category, Review
 
 
+# Factories for service.py ---------------------------------------------------------------------------------------------
+class CategoryFactory(DjangoModelFactory):  # Factory creates random categories for services
+    class Meta:
+        model = Category
+
+    naming = factory.faker.Faker('color')
+
+
+class ServiceFactory(DjangoModelFactory):  # This factory creates services with random data
+    class Meta:
+        model = Service
+
+    name = factory.faker.Faker('company')
+    category = factory.SubFactory(CategoryFactory)
+    cost = factory.faker.Faker('pyint')
+
+
+
 # Factories for profiles.py --------------------------------------------------------------------------------------------
 class UserRoleFactory(DjangoModelFactory):  # This factory creates sample user roles
     class Meta:
@@ -22,26 +40,21 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     name = factory.faker.Faker('first_name')
     email = factory.faker.Faker('email')
     phone = factory.faker.Faker('phone_number')
+    country = factory.faker.Faker('country')
+    city = factory.faker.Faker('city')
+    address_details = factory.faker.Faker('address')
     role = factory.SubFactory(UserRoleFactory)
     password = factory.faker.Faker('password')
 
+    @factory.post_generation
+    def services(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
 
-# Factories for service.py ---------------------------------------------------------------------------------------------
-class CategoryFactory(DjangoModelFactory):  # Factory creates random categories for services
-    class Meta:
-        model = Category
-
-    naming = factory.faker.Faker('color')
-
-
-class ServiceFactory(DjangoModelFactory):  # This factory creates services with random data
-    class Meta:
-        model = Service
-
-    name = factory.faker.Faker('company')
-    category = factory.SubFactory(CategoryFactory)
-    cost = factory.faker.Faker('pyint')
-    company = factory.SubFactory(UsersFactory)
+        if extracted:
+            # A list of services were passed in, use them
+                self.services.add(*extracted)
 
 
 # Factories for request.py ---------------------------------------------------------------------------------------------

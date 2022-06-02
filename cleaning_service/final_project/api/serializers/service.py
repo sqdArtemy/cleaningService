@@ -11,12 +11,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ['name', 'cost', 'category', 'company']
+        fields = ['name', 'cost', 'category']
 
-    company = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
 
     def get_category(self, service):
         return service.category.naming
-    def get_company(self, service):
-        return service.company.username

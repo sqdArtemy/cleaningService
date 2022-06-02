@@ -34,8 +34,8 @@ class TestService:
                           get_token=get_token)
 
     def test_retrieve(self, mocker, rf, get_token):  # <----------Tests getting only 1 item
-        default_test_retrieve(api_client=rf, factory=ServiceFactory, endpoint='service',get_token=get_token,
-                              viewset=ServiceViewSet, foreign_keys={'category': Category, 'company': User})
+        default_test_retrieve(api_client=rf, factory=ServiceFactory, endpoint='service', get_token=get_token,
+                              viewset=ServiceViewSet, foreign_keys={'category': Category})
 
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
         default_test_delete(api_client=api_client, endpoint='/service', factory=ServiceFactory(), model=Service,
@@ -43,7 +43,7 @@ class TestService:
 
     def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality
         default_test_create(api_client=api_client, endpoint=self.endpoint, factory=ServiceFactory, model=Service,
-                            foreign_keys={'category': Category, 'company': User}, get_token=get_token)
+                            foreign_keys={'category': Category}, get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
         default_test_not_found(api_client=rf, model=Service, viewset=ServiceViewSet, factory=ServiceFactory,
@@ -59,7 +59,6 @@ class TestService:
             'name': new_service.name,
             'cost': new_service.cost,
             'category': new_service.category.naming,
-            'company': old_service.company.username,
         }
 
         request = rf.put(
