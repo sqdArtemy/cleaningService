@@ -5,12 +5,13 @@ from celery import Celery
 from django.conf import settings
 from celery.schedules import crontab
 
+# Set default django settings as settings for celery
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'final_project.settings.settings')
 
-app = Celery('final_project')
-app.conf.enable_utc = False
+app = Celery('final_project')  # Instance of a celery
+app.conf.enable_utc = True
 
-app.conf.update(timezone = 'Asia/Tashkent')
+app.conf.update(timezone='UTC')
 app.config_from_object(settings, namespace='CELERY')
 
 
@@ -18,7 +19,7 @@ app.config_from_object(settings, namespace='CELERY')
 app.conf.beat_schedule = {
     'test-task-every-10-seconds': {
         'task': 'core.tasks.test_func',
-        'schedule': 10.0,
+        'schedule': 10.0,  # Interval - 10 seconds
         #'args': (),
     }
 }
