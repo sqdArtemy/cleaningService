@@ -11,8 +11,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'final_project.settings.settings
 app = Celery('final_project')  # Instance of a celery
 app.conf.enable_utc = True
 
+# Adjusting celery configurations
 app.conf.update(timezone='UTC')
 app.config_from_object(settings, namespace='CELERY')
+app.conf.update(CELERY_TASK_RESULT_EXPIRES=3600,)
 
 
 # Celery beat settings
