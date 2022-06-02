@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from core.models.profiles import User, UserRole
+from api.serializers.service import ServiceSerializer
 
 
 class UserRoleSerializer(serializers.ModelSerializer):
@@ -11,9 +12,10 @@ class UserRoleSerializer(serializers.ModelSerializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'name', 'email', 'phone', 'role',)
+        fields = ('username', 'name', 'email', 'phone', 'role', 'country', 'city', 'address_details', 'services')
 
     role = serializers.SerializerMethodField()
+    services = ServiceSerializer(read_only=True, many=True)
 
     def get_role(self, user):
         return user.role.role

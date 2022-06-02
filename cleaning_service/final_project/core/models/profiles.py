@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
 from core.utility.managers import CustomUserManager
+from .service import Service
 
 
 ROLES = {  # Roles that can be assigned to user
@@ -20,6 +21,10 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     username = models.CharField(verbose_name="Username", max_length=30, unique=True)
     name = models.CharField(verbose_name="User`s name", max_length=150, null=False, default="default")
     email = models.EmailField(verbose_name="User`s email", null=False, unique=True)
+    country = models.CharField(verbose_name="Country", max_length=50, null=False)
+    city = models.CharField(verbose_name="City", max_length=50, null=False)
+    address_details = models.CharField(verbose_name="District, house, apartment", max_length=256, null=False)
+    services = models.ManyToManyField(Service, null=True)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
 
@@ -31,7 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     objects = CustomUserManager()  # Custom object manager for base user overloading
 
     USERNAME_FIELD = 'email'  # This field is user to log in with
-    REQUIRED_FIELDS = ['username', 'name', 'phone', 'password', 'role']
+    REQUIRED_FIELDS = ['username', 'name', 'phone', 'password', 'role', 'country', 'city', 'address_details']
 
     def __str__(self):  # Returns comprehensible representation of object
         return self.username

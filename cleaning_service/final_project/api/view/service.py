@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from api.serializers.service import CategorySerializer, ServiceSerializer
-from core.models.service import Service, Category, User
+from core.models.service import Service, Category
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 
@@ -25,11 +25,8 @@ class ServiceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ServiceSerializer
 
-    def get_category(self, name):  # Obtaining category instance
-        return Category.objects.filter(naming=name).first()
-
-    def get_company(self, username):  # Obtaining company object
-        return User.objects.filter(username=username).first()
+    def get_category(self, naming):  # Obtaining company object
+        return Category.objects.filter(naming=naming).first()
 
     def get_queryset(self):
         services = Service.objects.select_related('category')
@@ -39,8 +36,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         data = request.data
 
         new_service = Service.objects.create(name=data["name"], cost=data["cost"],
-                                             category=self.get_category(data['category']),
-                                             company=self.get_company(data['company']))
+                                             category=self.get_category(data['category']))
         new_service.save()
         serializer = ServiceSerializer(new_service)
         return Response(serializer.data)
@@ -57,7 +53,6 @@ class ServiceViewSet(viewsets.ModelViewSet):
         service.name = data['name']
         service.cost = data['cost']
         service.category = self.get_category(data['category'])
-        service.company = service.company
         service.save()
 
         serializer = ServiceSerializer(service)
