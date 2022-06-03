@@ -8,6 +8,8 @@ sys.path.append('..')
 from api.view import RequestViewSet, RequestStatusViewSet
 from .default_tests import default_test_delete, default_test_list, default_test_retrieve, default_test_create, \
     default_test_not_found
+from django.db.models.signals import post_save
+from api.signals import company_notifier_signal
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
@@ -48,11 +50,12 @@ class TestRequest:
                             get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
-        default_test_not_found(api_client=rf, model=Request, viewset=RequestViewSet, factory=RequestFactory,
+        default_test_not_found(api_client=rf, viewset=RequestViewSet, factory=RequestFactory,
                                endpoint='request', get_token=get_token)
 
 
     def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
+        post_save.disconnect(sender=Request, receiver=company_notifier_signal)
         old_request = RequestFactory()
         new_request = RequestFactory()
         request_dict = {
@@ -60,7 +63,9 @@ class TestRequest:
             'customer': old_request.customer.username,
             'service': old_request.service.name,
             'total_area': new_request.total_area,
-            'address': new_request.address,
+            'address_details': new_request.address_details,
+            'city': new_request.city,
+            'country': new_request.country,
         }
 
         request = rf.put(

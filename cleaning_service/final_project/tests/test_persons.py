@@ -4,7 +4,6 @@ import factory
 import sys
 from .factories import UserRoleFactory, UsersFactory, ServiceFactory
 from core.models import User, UserRole, Category
-
 sys.path.append('..')
 from api.view import UserViewSet, UserRoleViewSet
 from .fixtures import api_client, get_token
@@ -45,11 +44,11 @@ class TestUser:
                             get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
-        default_test_not_found(api_client=rf, model=User, viewset=UserViewSet, factory=UsersFactory,
+        default_test_not_found(api_client=rf, viewset=UserViewSet, factory=UsersFactory,
                                endpoint='user', get_token=get_token)
 
     def test_not_authenticated(self, api_client):
-        default_test_not_authorized(api_client=api_client, model=User, factory=UsersFactory, endpoint='user')
+        default_test_not_authorized(api_client=api_client, factory=UsersFactory, endpoint='user')
 
     def test_create(self, rf, get_token):  # <----------Tests creating an instance functionality
         valid_data_dict = factory.build(

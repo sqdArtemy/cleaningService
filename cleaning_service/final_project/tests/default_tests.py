@@ -1,8 +1,7 @@
-from rest_framework import permissions
 import json
 from django.forms.models import model_to_dict
 from .factories import UsersFactory, UserRoleFactory
-from core.models import User
+from core.models import User, Request
 
 
 # Template function in order to test list view
@@ -27,7 +26,7 @@ def default_test_list(api_client, factory, endpoint, viewset, get_token):
 def default_test_delete(api_client, factory, endpoint, model, get_token):
     # Arrange
     amount = 0
-    if model == User: amount+=1
+    if model == User: amount += 1
     object = factory
 
     response = api_client.delete(f'{endpoint}/{object.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
@@ -70,15 +69,18 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
     obj = factory()
 
     expected_json = model_to_dict(instance=obj, exclude="id")
+    expected_json['no_signal'] = 'no_signal'  # Adding marker to disable signals
 
     # Formatting date
     if has_date is not None:
         date = json.dumps(obj.created_at, indent=4, sort_keys=True, default=str)
         expected_json['created_at'] = date.replace(' ', 'T').replace('"', '') + 'Z'
 
+
     if foreign_keys is not None:  # Substituting foreign keys ID`s with serializer`s representation
         for item in foreign_keys.keys():
             expected_json[item] = str(foreign_keys[item].objects.get(id=expected_json[item]))
+
 
     response = api_client.post(
         path=endpoint,
@@ -87,6 +89,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
         HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
     )
 
+    del expected_json['no_signal']  # Removing marker
     # Comparing results
     assert response.status_code == 200
     assert json.loads(response.content) == expected_json
@@ -94,7 +97,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
 
 
 # Default test for cse if object is not found
-def default_test_not_found(api_client, model, factory, endpoint, viewset, get_token):
+def default_test_not_found(api_client, factory, endpoint, viewset, get_token):
     obj = factory()
     request = api_client.get(f'/{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
@@ -106,7 +109,7 @@ def default_test_not_found(api_client, model, factory, endpoint, viewset, get_to
     assert response.status_code == 404
 
 # Default test for case, when user is not authenticated
-def default_test_not_authorized(api_client, model, factory, endpoint):
+def default_test_not_authorized(api_client, factory, endpoint):
     object = factory()
 
     response = api_client.delete(f'/{endpoint}/{object.id}')

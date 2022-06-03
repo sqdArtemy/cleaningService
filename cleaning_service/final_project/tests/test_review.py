@@ -33,11 +33,11 @@ class TestReview:
                             foreign_keys={'customer': User}, has_date=True, get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
-        default_test_not_found(api_client=rf, model=Review, viewset=ReviewViewSet, factory=ReviewFactory,
+        default_test_not_found(api_client=rf, viewset=ReviewViewSet, factory=ReviewFactory,
                                endpoint='review', get_token=get_token)
 
     def test_not_authenticated(self, api_client):
-        default_test_not_authorized(api_client=api_client, model=Review, factory=ReviewFactory, endpoint='review')
+        default_test_not_authorized(api_client=api_client, factory=ReviewFactory, endpoint='review')
 
     def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
         old_review = ReviewFactory()

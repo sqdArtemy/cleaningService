@@ -46,11 +46,11 @@ class TestService:
                             foreign_keys={'category': Category}, get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
-        default_test_not_found(api_client=rf, model=Service, viewset=ServiceViewSet, factory=ServiceFactory,
-                               endpoint='service', get_token=get_token)
+        default_test_not_found(api_client=rf, viewset=ServiceViewSet, factory=ServiceFactory, endpoint='service',
+                               get_token=get_token)
 
     def test_not_authenticated(self, api_client):
-        default_test_not_authorized(api_client=api_client, model=Service, factory=ServiceFactory, endpoint='service')
+        default_test_not_authorized(api_client=api_client, factory=ServiceFactory, endpoint='service')
 
     def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
         old_service = ServiceFactory()

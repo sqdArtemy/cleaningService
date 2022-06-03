@@ -12,10 +12,10 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
     serializer_class = ReviewSerializer
 
     def get_customer(self, username):  # Obtaining user instance
-        return User.objects.filter(username=username).first()
+        return User.objects.get(username=username)
 
     def get_request(self, id):  # Obtaining request instance
-        return Request.objects.filter(id=id).first()
+        return Request.objects.get(id=id)
 
     def get_queryset(self):
         categories = Review.objects.select_related('customer', 'request')
@@ -28,10 +28,6 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
                                            feedback=data['feedback'], rate=data['rate'], created_at=data['created_at'])
         new_review.save()
         serializer = ReviewSerializer(new_review)
-        return Response(serializer.data)
-
-    def list(self, request: Review, *args, **kwargs) -> Response:
-        serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
     def update(self, request, pk):
@@ -48,4 +44,3 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
 
         serializer = ReviewSerializer(review)
         return Response(serializer.data)
-

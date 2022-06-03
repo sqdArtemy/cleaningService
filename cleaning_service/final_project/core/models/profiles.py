@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     country = models.CharField(verbose_name="Country", max_length=50, null=False)
     city = models.CharField(verbose_name="City", max_length=50, null=False)
     address_details = models.CharField(verbose_name="District, house, apartment", max_length=256, null=False)
-    services = models.ManyToManyField(Service, null=True)
+    services = models.ManyToManyField(Service)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
 

@@ -21,7 +21,9 @@ class Request(models.Model):
     customer = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
     status = models.ForeignKey(to=RequestStatus, on_delete=models.CASCADE, null=False)
     total_area = models.FloatField(verbose_name="Total area to be cleaned", default=0, null=False)
-    address = models.TextField(verbose_name="User`s address", null=False)
+    country = models.CharField(verbose_name="Country of request", max_length=100, null=False)
+    city = models.CharField(verbose_name="City of request", max_length=100, null=False)
+    address_details = models.CharField(verbose_name="District, street, house, apartment", max_length=250, null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
 
     # Overloading method save for calculating total cost of the request
@@ -30,4 +32,4 @@ class Request(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.address
+        return self.id

@@ -1,5 +1,3 @@
-import json
-
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -23,12 +21,11 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = CustomUserSerializer
 
-    def get_role(self, name):  # Obtaining user role object
-        return UserRole.objects.filter(role=name).first()
+    def get_role(self, role):  # Obtaining user role object
+        return UserRole.objects.filter(role=role).first()
 
     def get_queryset(self):
-        users = User.objects.select_related('role')
-        users = User.objects.prefetch_related('services')
+        users = User.objects.select_related('role').prefetch_related('services__category')
         return users
 
     def services_setter(self, data, obj):  # Function which properly sets many-to-many services

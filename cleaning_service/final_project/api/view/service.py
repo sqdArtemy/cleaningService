@@ -15,10 +15,6 @@ class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
         categories = Category.objects.all()
         return categories
 
-    def list(self, request: Category, *args, **kwargs) -> Response:
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
-
 
 # Views for service
 class ServiceViewSet(viewsets.ModelViewSet):
@@ -26,7 +22,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
 
     def get_category(self, naming):  # Obtaining company object
-        return Category.objects.filter(naming=naming).first()
+        return Category.objects.get(naming=naming)
 
     def get_queryset(self):
         services = Service.objects.select_related('category')
@@ -41,10 +37,6 @@ class ServiceViewSet(viewsets.ModelViewSet):
         serializer = ServiceSerializer(new_service)
         return Response(serializer.data)
 
-    def list(self, request: Service, *args, **kwargs) -> Response:
-        serializer = self.get_serializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
-
     def update(self, request, pk, *args, **kwargs):
         data = request.data
         service_object = Service.objects.all()
@@ -57,4 +49,3 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         serializer = ServiceSerializer(service)
         return Response(serializer.data)
-

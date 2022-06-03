@@ -72,7 +72,9 @@ class RequestFactory(DjangoModelFactory):  # This factory creates requests with 
     service = factory.SubFactory(ServiceFactory)
     customer = factory.SubFactory(UsersFactory)
     status = factory.SubFactory(RequestStatusFactory)
-    address = factory.faker.Faker('address')
+    country = factory.faker.Faker('country')
+    city = factory.faker.Faker('city')
+    address_details = factory.faker.Faker('address')
     total_area = factory.faker.Faker('pyint')
 
 
@@ -84,5 +86,5 @@ class ReviewFactory(DjangoModelFactory):
     request = factory.SubFactory(RequestFactory)
     customer = factory.SubFactory(UsersFactory)
     feedback = factory.faker.Faker('text')
-    rate = factory.faker.Faker('pyint')
+    rate = factory.faker.Faker('pyint', min_value=1, max_value=5)
     created_at = factory.faker.Faker('date_time')
