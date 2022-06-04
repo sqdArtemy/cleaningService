@@ -18,13 +18,15 @@ class RequestStatus(models.Model):
 
 class Request(models.Model):
     service = models.ForeignKey(to=Service, on_delete=models.CASCADE, null=False)
-    customer = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
+    customer = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False, related_name='Customer')
     status = models.ForeignKey(to=RequestStatus, on_delete=models.CASCADE, null=False)
     total_area = models.FloatField(verbose_name="Total area to be cleaned", default=0, null=False)
     country = models.CharField(verbose_name="Country of request", max_length=100, null=False)
     city = models.CharField(verbose_name="City of request", max_length=100, null=False)
     address_details = models.CharField(verbose_name="District, street, house, apartment", max_length=250, null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
+    company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company',
+                                null=True, blank=True, default=None)
 
     # Overloading method save for calculating total cost of the request
     def save(self, *args, **kwargs):

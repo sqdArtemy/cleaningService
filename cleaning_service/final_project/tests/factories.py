@@ -72,6 +72,7 @@ class RequestFactory(DjangoModelFactory):  # This factory creates requests with 
     service = factory.SubFactory(ServiceFactory)
     customer = factory.SubFactory(UsersFactory)
     status = factory.SubFactory(RequestStatusFactory)
+    company = factory.SubFactory(UsersFactory)
     country = factory.faker.Faker('country')
     city = factory.faker.Faker('city')
     address_details = factory.faker.Faker('address')

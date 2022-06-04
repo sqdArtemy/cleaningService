@@ -41,7 +41,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         new_request = Request.objects.create(customer=self.get_user(data["customer"]), total_area=data['total_area'],
                                              service=self.get_service(data['service']), country=data['country'],
                                              status=self.get_status(data['status']), city=data['city'],
-                                             address_details=data['address_details'],)
+                                             address_details=data['address_details'],
+                                             company=self.get_user(data['company']))
         if 'no_signal' not in data: post_save.connect(receiver=company_notifier_signal, sender=Request)
         new_request.save()
         serializer = RequestSerializer(new_request)
@@ -60,6 +61,7 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request.total_area = data['total_area']
         request.country = data['country']
         request.city = data['city']
+        request.company = self.get_user(data['company'])
         request.address_details = data['address_details']
         request.save()
 

@@ -37,8 +37,8 @@ class TestRequest:
 
     def test_retrieve(self, rf, get_token):  # <----------Tests getting only 1 item
         default_test_retrieve(api_client=rf, factory=RequestFactory, endpoint='request', viewset=RequestViewSet,
-                              foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service},
-                              get_token=get_token)
+                              foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service,
+                                            'company': User}, get_token=get_token)
 
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
         default_test_delete(api_client=api_client, endpoint='/request', factory=RequestFactory(), model=Request,
@@ -46,8 +46,8 @@ class TestRequest:
 
     def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality
         default_test_create(api_client=api_client, endpoint=self.endpoint, factory=RequestFactory, model=Request,
-                            foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service},
-                            get_token=get_token)
+                            foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service,
+                                          'company': User}, get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
         default_test_not_found(api_client=rf, viewset=RequestViewSet, factory=RequestFactory,
@@ -66,6 +66,7 @@ class TestRequest:
             'address_details': new_request.address_details,
             'city': new_request.city,
             'country': new_request.country,
+            'company': new_request.company.username,
         }
 
         request = rf.put(
