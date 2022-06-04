@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 from api.serializers import CustomUserSerializer, UserRoleSerializer
 from core.models.profiles import User, UserRole, Service
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from core.utility.filters import UserFilter
 
 
 # Views for user role
@@ -20,6 +22,8 @@ class UserRoleViewSet(viewsets.ModelViewSet):  # ViewSet
 class UserViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = CustomUserSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = UserFilter
 
     def get_role(self, role):  # Obtaining user role object
         return UserRole.objects.filter(role=role).first()
@@ -43,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         new_user = User.objects.create_user(name=data['name'], email=data['email'], phone=data['phone'],
                                             role=self.get_role(data['role']), country=data['country'],
                                             city=data['city'], address_details=data['address_details'],
-                                            username=data['username'], password=data['password'])
+                                            username=data['username'], password=data['password'], rating=data['rating'])
         new_user.save()
 
         if 'services' in data:  # If user have services -> process and add it to the User object
@@ -64,6 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         user.address_details = data['address_details']
         user.phone = data['phone']
         user.role = user.role
+        user.rating = data['rating']
         user.set_password(user.password)
         user.save()
 

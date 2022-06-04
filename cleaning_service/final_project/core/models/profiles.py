@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
 from core.utility.managers import CustomUserManager
 from .service import Service
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 ROLES = {  # Roles that can be assigned to user
@@ -27,6 +28,8 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     services = models.ManyToManyField(Service)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
+    rating = models.PositiveSmallIntegerField(verbose_name="Star-rating", default=0, null=False, validators=(
+        MaxValueValidator(5), MinValueValidator(0)))
 
     # User`s rights
     is_superuser = models.BooleanField(default=False)

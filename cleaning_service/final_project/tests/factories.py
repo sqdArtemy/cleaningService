@@ -45,6 +45,7 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     address_details = factory.faker.Faker('address')
     role = factory.SubFactory(UserRoleFactory)
     password = factory.faker.Faker('password')
+    rating = factory.faker.Faker('pyint', min_value=1, max_value=5)
 
     @factory.post_generation
     def services(self, create, extracted, **kwargs):

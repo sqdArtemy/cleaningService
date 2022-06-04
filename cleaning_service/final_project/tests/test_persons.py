@@ -103,6 +103,7 @@ class TestUser:
             'address_details': new_user.address_details,
             'role': old_user.role.role,
             'password': new_user.password,
+            'rating': new_user.rating,
         }
 
         UserRole.objects.create(role=old_user.role)  # Recreating user role in DB
