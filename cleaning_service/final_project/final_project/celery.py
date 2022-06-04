@@ -18,13 +18,13 @@ app.conf.update(CELERY_TASK_RESULT_EXPIRES=3600,)
 
 
 # Celery beat settings
-app.conf.beat_schedule = {
-    'test-task-every-10-seconds': {
-        'task': 'core.tasks.test_func',
-        'schedule': 10.0,  # Interval - 10 seconds
-        #'args': (),
-    }
-}
+# app.conf.beat_schedule = {  Template
+#     'test-task-every-10-seconds': {
+#         'task': 'core.tasks.test_func',
+#         'schedule': 10.0,  # Interval - 10 seconds
+#         #'args': (),
+#     }
+# }
 
 app.autodiscover_tasks()
 

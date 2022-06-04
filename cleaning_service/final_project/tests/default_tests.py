@@ -88,6 +88,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
         format='json',
         HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
     )
+    if model == Request: expected_json['company'] = None  # When request created this field should be empty
 
     del expected_json['no_signal']  # Removing marker
     # Comparing results

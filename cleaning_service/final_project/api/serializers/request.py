@@ -26,5 +26,9 @@ class RequestSerializer(serializers.ModelSerializer):
     def get_service(self, request):
         return request.service.name
     def get_company(self, request):
-        return request.company.username
+        try:
+            return request.company.username
+        except AttributeError:
+            return None
+
 

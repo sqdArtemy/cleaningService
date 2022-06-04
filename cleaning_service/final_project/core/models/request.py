@@ -26,7 +26,7 @@ class Request(models.Model):
     address_details = models.CharField(verbose_name="District, street, house, apartment", max_length=250, null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
     company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company',
-                                null=True, blank=True, default=None)
+                                null=True, blank=True)
 
     # Overloading method save for calculating total cost of the request
     def save(self, *args, **kwargs):

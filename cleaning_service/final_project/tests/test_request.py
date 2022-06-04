@@ -46,8 +46,8 @@ class TestRequest:
 
     def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality
         default_test_create(api_client=api_client, endpoint=self.endpoint, factory=RequestFactory, model=Request,
-                            foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service,
-                                          'company': User}, get_token=get_token)
+                            foreign_keys={'customer': User, 'status': RequestStatus, 'service': Service},
+                            get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found
         default_test_not_found(api_client=rf, viewset=RequestViewSet, factory=RequestFactory,
