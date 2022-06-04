@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Secret key
-secret_key.py
+secret_data.py

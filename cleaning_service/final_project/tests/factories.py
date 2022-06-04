@@ -4,7 +4,7 @@ from django.forms.models import model_to_dict
 from factory.django import DjangoModelFactory
 sys.path.append('..')
 from core.models import User, UserRole, Request, RequestStatus, Service, Category, Review
-
+from django.core.files.base import ContentFile
 
 # Factories for service.py ---------------------------------------------------------------------------------------------
 class CategoryFactory(DjangoModelFactory):  # Factory creates random categories for services
@@ -21,7 +21,12 @@ class ServiceFactory(DjangoModelFactory):  # This factory creates services with 
     name = factory.faker.Faker('company')
     category = factory.SubFactory(CategoryFactory)
     cost = factory.faker.Faker('pyint')
-
+    picture = factory.LazyAttribute(  # Faking some picture
+            lambda _: ContentFile(
+                factory.django.ImageField()._make_data(
+                    {'width': 1024, 'height': 768}
+                ), 'example.jpg')
+            )
 
 
 # Factories for profiles.py --------------------------------------------------------------------------------------------
@@ -46,6 +51,7 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     role = factory.SubFactory(UserRoleFactory)
     password = factory.faker.Faker('password')
     rating = factory.faker.Faker('pyint', min_value=1, max_value=5)
+    profile_pic = None
 
     @factory.post_generation
     def services(self, create, extracted, **kwargs):

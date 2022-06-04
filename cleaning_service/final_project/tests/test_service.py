@@ -59,6 +59,7 @@ class TestService:
             'name': new_service.name,
             'cost': new_service.cost,
             'category': new_service.category.naming,
+            'picture': str(new_service.picture),
         }
 
         request = rf.put(
@@ -74,6 +75,9 @@ class TestService:
 
         view = ServiceViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_service.id).render()
+
+        # Adding core media folder to expected json
+        service_dict['picture'] = '/media/' + service_dict['picture']
 
         assert response.status_code == 200
         assert json.loads(response.content) == service_dict

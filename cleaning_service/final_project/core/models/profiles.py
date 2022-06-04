@@ -19,6 +19,7 @@ class UserRole(models.Model):  # User role (Customer or company)
 
 
 class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
+    profile_pic = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     username = models.CharField(verbose_name="Username", max_length=30, unique=True)
     name = models.CharField(verbose_name="User`s name", max_length=150, null=False, default="default")
     email = models.EmailField(verbose_name="User`s email", null=False, unique=True)

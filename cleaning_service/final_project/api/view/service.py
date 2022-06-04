@@ -35,7 +35,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data
 
-        new_service = Service.objects.create(name=data["name"], cost=data["cost"],
+        new_service = Service.objects.create(name=data["name"], cost=data["cost"], picture=data['picture'],
                                              category=self.get_category(data['category']))
         new_service.save()
         serializer = ServiceSerializer(new_service)
@@ -48,6 +48,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         service.name = data['name']
         service.cost = data['cost']
+        service.picture = data['picture']
         service.category = self.get_category(data['category'])
         service.save()
 

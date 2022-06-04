@@ -14,6 +14,18 @@ from django.forms.models import model_to_dict
 pytestmark = pytest.mark.django_db  # Links with django data base
 
 
+# Function, which formats services in user tests
+def service_formatter(services):
+    # Formatting services field for output
+    formated_services = []
+    for srv in services:
+        srv = model_to_dict(srv, exclude='id')
+        srv['category'] = str(Category.objects.get(id=srv['category']))
+        srv['picture'] = '/media/' + str(srv['picture'])
+        formated_services.append(srv)
+    return formated_services
+
+
 # Tests for user roles
 class TestUserRole:
     endpoint = '/user_roles/'  # Needed endpoints
@@ -75,14 +87,7 @@ class TestUser:
         # Deleting password from the dict, because response does not return password
         del valid_data_dict['password']
 
-        # Formatting services field for output
-        formated_services = []
-        for srv in services:
-            srv = model_to_dict(srv, exclude='id')
-            srv['category'] = str(Category.objects.get(id=srv['category']))
-            formated_services.append(srv)
-
-        valid_data_dict['services'] = formated_services
+        valid_data_dict['services'] = service_formatter(services) # Formatting services
 
         # Testing if results are equal
         assert response.status_code == 200 or response.status_code == 201
@@ -104,6 +109,7 @@ class TestUser:
             'role': old_user.role.role,
             'password': new_user.password,
             'rating': new_user.rating,
+            'profile_pic': str(new_user.profile_pic)
         }
 
         UserRole.objects.create(role=old_user.role)  # Recreating user role in DB
@@ -122,17 +128,12 @@ class TestUser:
         view = UserViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_user.id).render()
 
-        # Formatting services field for output
-        formated_services = []
-        for srv in services:
-            srv = model_to_dict(srv, exclude='id')
-            srv['category'] = str(Category.objects.get(id=srv['category']))
-            formated_services.append(srv)
-
-        user_dict['services'] = formated_services
+        user_dict['services'] = service_formatter(services)  # Formatting services
 
         # Deleting password from the dict, because response does not return password
         del user_dict['password']
+        # If user has no picture - format empty field
+        if len(user_dict['profile_pic']) is 0: user_dict['profile_pic'] = None
 
         assert response.status_code == 200
         assert json.loads(response.content) == user_dict
