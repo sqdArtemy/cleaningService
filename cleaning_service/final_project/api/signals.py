@@ -5,8 +5,8 @@ def notification_maker(request, users, header, text):  # Creating notification o
     user_mails = []
     for user in users:  # Getting user mails
         user_mails.append(user.email)
-
-    mail_sender_task.delay(user_mails=user_mails, text=text, header=header)
+    # Sending mails to users
+    # mail_sender_task.delay(user_mails=user_mails, text=text, header=header)
     for user in users:  # Sending notification to all needed users
         new_notification = Notification.objects.create(
             request=request,
@@ -14,6 +14,7 @@ def notification_maker(request, users, header, text):  # Creating notification o
             text=text,
             user=user,
             seen=False,
+            accepted=False,
         )
 
 
@@ -21,8 +22,7 @@ def notification_maker(request, users, header, text):  # Creating notification o
 def company_notifier_signal(sender, instance: Request, **kwargs):
     print('signal to company ------')
     # Making data
-    role = UserRole.objects.get(role='Company')
-    companies = User.objects.filter(role=role)
+    companies = User.objects.filter(role__role="Company")
     header = 'New request available, check it out!'
     text = f'New request for cleaning available! \nService: {instance.service.name}\nCustomer details:' \
            f'\n\tName: {instance.customer.name}\n\tEmail: {instance.customer.email}'

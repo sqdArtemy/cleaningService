@@ -44,6 +44,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
                                              address_details=data['address_details'], company=None)
         if 'no_signal' not in data: post_save.connect(receiver=company_notifier_signal, sender=Request)
         new_request.save()
+        # Disconnecting signal to avoid repetitive emitting
+        post_save.disconnect(receiver=company_notifier_signal, sender=Request)
         serializer = RequestSerializer(new_request)
         return Response(serializer.data)
 

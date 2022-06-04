@@ -44,4 +44,4 @@ class ReviewAdmin(admin.ModelAdmin):
 # Admin registration for notifications.py-------------------------------------------------------------------------------
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'request', 'seen', 'accept', 'header')
+    list_display = ('user', 'request', 'seen', 'accepted', 'header')
