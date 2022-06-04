@@ -4,6 +4,8 @@ from api.serializers.service import CategorySerializer, ServiceSerializer
 from core.models.service import Service, Category
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from core.utility.filters import ServiceFilter
 
 
 # Views for category
@@ -20,6 +22,8 @@ class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
 class ServiceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ServiceSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ServiceFilter
 
     def get_category(self, naming):  # Obtaining company object
         return Category.objects.get(naming=naming)

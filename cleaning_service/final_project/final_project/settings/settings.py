@@ -219,3 +219,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = email_host_user
 EMAIL_HOST_PASSWORD = email_host_password
 DEFAULT_FROM_EMAIL = f'Cleaning api<{email_host_user}>'
+
+# Settings for picture savings
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

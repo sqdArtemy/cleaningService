@@ -19,6 +19,14 @@ class NotificationViewSet(viewsets.ModelViewSet):
         notifications = Notification.objects.select_related('user', 'request')
         return notifications
 
+    def retrieve(self, request, pk, *args, **kwargs):
+        # If notification is called by id from user-side -> make status seen: True
+        notification = Notification.objects.get(id=pk)
+        notification.seen = True
+        notification.save()
+        serializer = self.serializer_class(notification)
+        return Response(serializer.data)
+
     def create(self, request, *args, **kwargs):
         data = request.data
 
@@ -26,5 +34,5 @@ class NotificationViewSet(viewsets.ModelViewSet):
                                                    user=self.get_user(data["user"]), accept = data['accept'],
                                                    request=self.get_request(data['request']))
         notification.save()
-        serializer = NotificationSerializer(notification)
+        serializer = self.serializer_class(notification)
         return Response(serializer.data)

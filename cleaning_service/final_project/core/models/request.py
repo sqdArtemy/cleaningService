@@ -4,6 +4,7 @@ from .service import Service
 
 STATUSES = {  # Statuses of the request
     ("pending", "Pending"),
+    ("accepted", "Accepted"),
     ("completed", "Completed"),
     ("canceled", "Canceled"),
 }

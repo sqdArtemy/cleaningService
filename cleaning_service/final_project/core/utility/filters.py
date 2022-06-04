@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from core.models import User
+from core.models import User, Service
 
 
 # Some base filters
@@ -17,4 +17,13 @@ class UserFilter(filters.FilterSet):
 
     class Meta:
         model = User
-        fields = ['rating', 'city', 'country', 'services', 'role']
+        fields = ('rating', 'city', 'country', 'services', 'role',)
+
+
+# Filter for services
+class ServiceFilter(filters.FilterSet):
+    cost = filters.RangeFilter()
+
+    class Meta:
+        model = Service
+        fields = ('cost',)

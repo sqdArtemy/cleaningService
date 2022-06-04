@@ -8,7 +8,7 @@ class Notification(models.Model):
     header = models.CharField(verbose_name="Header of notification", max_length=156, null=False)
     text = models.TextField(verbose_name='Text of the notification', null=False)
     request = models.ForeignKey(to=Request, on_delete=models.CASCADE)
-    accepted = models.BooleanField(verbose_name="Request was accepted", default=False)  # Was this request accepted ?
+    accepted = models.BooleanField(verbose_name="Request was accepted", default=False)
 
     def __str__(self):
         return self.id
