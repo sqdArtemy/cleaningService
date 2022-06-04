@@ -26,5 +26,5 @@ class RequestSerializer(serializers.ModelSerializer):
     def get_service(self, request):
         return request.service.name
     def get_company(self, request):
-        return company
+        return request.company.username
 
