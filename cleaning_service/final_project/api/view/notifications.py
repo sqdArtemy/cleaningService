@@ -14,7 +14,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         return User.objects.filter(username=username).first()
 
     def get_request(self, id):
-        return Request.objects.get(id=1)
+        return Request.objects.get(id=id)
 
     def get_queryset(self):
         notifications = Notification.objects.select_related('user', 'request')
@@ -22,7 +22,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk, *args, **kwargs):
         # If notification is called by id from user-side -> make status seen: True
-        request_object = Notification.objects.all()
+        request_object = Notification.objects.select_related('user', 'request')
         notification = get_object_or_404(request_object, pk=pk)
         notification.seen = True
         notification.save()
@@ -37,4 +37,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
                                                    request=self.get_request(data['request']))
         notification.save()
         serializer = self.serializer_class(notification)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        notification = self.get_object()
+        data = request.data
+        notification.seen = data['seen']
+        notification.accepted = data['accepted']
+        notification.save()
+        serializer = NotificationSerializer(notification, partial=True)
         return Response(serializer.data)

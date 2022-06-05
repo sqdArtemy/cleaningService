@@ -44,8 +44,8 @@ class TestNotification:
             'request': old_notification.request.id,
             'seen': new_notification.seen,
             'accepted': new_notification.accepted,
-            'text': new_notification.text,
-            'header': new_notification.header,
+            'text': old_notification.text,
+            'header': old_notification.header,
         }
 
         request = rf.put(
