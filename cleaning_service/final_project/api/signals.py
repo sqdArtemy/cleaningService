@@ -1,7 +1,8 @@
-from core.models import Request, User, UserRole, Notification
-from core.tasks import mail_sender_task
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from core.models import Notification, Order, Request, User, UserRole
+from core.tasks import mail_sender_task
 
 
 def notification_maker(request, users, header, text):  # Creating notification object
@@ -37,11 +38,17 @@ def company_notifier_signal(sender, instance: Request, **kwargs):
 # Receive signals when company accepts offer from its notification:
 @receiver(post_save, sender=Notification)
 def customer_notifier_signal(sender, instance: Notification, **kwargs):
-    if instance.accepted is True and instance.user.role.role == 'Company':
+    print("heey")
+    print(instance.accepted == '1')
+    if instance.accepted == '1' and instance.user.role.role == 'Company':
+        print('HEEEY')
         # Making data
         user = (instance.request.customer,)
         header = f'New response to your request: {instance.request.id} !'
-        text = f'The company {instance.user} has proposer offer to your response, check it out!'
+        text = f'The company {instance.user} has proposed order to your response, check it out!'
+
+        # Creates order
+        Order.objects.create(accepted=False, notification=instance)
 
         # Process notifications
         notification_maker(request=instance.request, header=header, text=text, users=user)

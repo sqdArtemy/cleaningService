@@ -1,5 +1,7 @@
-from core.models import Notification, Request
 from rest_framework import serializers
+
+from core.models import Notification, Request
+
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:

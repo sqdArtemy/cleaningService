@@ -1,15 +1,22 @@
-import pytest
 import json
-import factory
 import sys
-from .factories import UserRoleFactory, UsersFactory, ServiceFactory
-from core.models import User, UserRole, Category
+
+import factory
+import pytest
+
+from core.models import Category, User, UserRole
+
+from .factories import ServiceFactory, UserRoleFactory, UsersFactory
+
 sys.path.append('..')
-from api.view import UserViewSet, UserRoleViewSet
-from .fixtures import api_client, get_token
-from .default_tests import default_test_delete, default_test_list, default_test_retrieve, default_test_not_found, \
-    default_test_not_authorized
 from django.forms.models import model_to_dict
+
+from api.view import UserRoleViewSet, UserViewSet
+
+from .default_tests import (default_test_delete, default_test_list,
+                            default_test_not_authorized,
+                            default_test_not_found, default_test_retrieve)
+from .fixtures import api_client, get_token
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 

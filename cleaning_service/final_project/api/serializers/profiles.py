@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from core.models.profiles import User, UserRole
+
 from api.serializers.service import ServiceSerializer
+from core.models.profiles import User, UserRole
 
 
 class UserRoleSerializer(serializers.ModelSerializer):

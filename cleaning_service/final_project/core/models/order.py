@@ -1,4 +1,5 @@
 from django.db import models
+
 from .notifications import Notification
 from .profiles import User
 from .request import Request

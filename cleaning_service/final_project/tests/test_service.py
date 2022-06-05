@@ -1,13 +1,19 @@
-import pytest
 import json
 import sys
+
+import pytest
+
+from core.models import Category, Service, User
+
+from .factories import CategoryFactory, ServiceFactory
 from .fixtures import api_client, get_token
-from .factories import ServiceFactory, CategoryFactory
-from core.models import Service, Category, User
+
 sys.path.append('..')
-from api.view import ServiceViewSet, CategoryViewSet
-from .default_tests import default_test_list, default_test_delete, default_test_retrieve, default_test_create, \
-    default_test_not_found, default_test_not_authorized
+from api.view import CategoryViewSet, ServiceViewSet
+
+from .default_tests import (default_test_create, default_test_delete,
+                            default_test_list, default_test_not_authorized,
+                            default_test_not_found, default_test_retrieve)
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 

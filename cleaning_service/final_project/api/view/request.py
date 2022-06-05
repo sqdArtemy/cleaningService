@@ -1,11 +1,14 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
-from api.serializers.request import RequestStatusSerializer, RequestSerializer
-from core.models.request import Request, RequestStatus, Service, User
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from django.shortcuts import get_object_or_404
-from api.signals import company_notifier_signal
 from django.db.models.signals import post_save
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+
+from api.serializers.request import RequestSerializer, RequestStatusSerializer
+from api.signals import company_notifier_signal
+from core.models.request import Request, RequestStatus, Service, User
+
 
 # Views for request status
 class RequestStatusViewSet(viewsets.ModelViewSet):  # ViewSet

@@ -1,7 +1,10 @@
-from rest_framework.test import APIClient
-import pytest
 import json
+
+import pytest
+from rest_framework.test import APIClient
+
 from core.models import User, UserRole
+
 
 @pytest.fixture
 def get_token():

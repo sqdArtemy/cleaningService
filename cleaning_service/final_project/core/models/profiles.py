@@ -1,9 +1,10 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser
-from core.utility.managers import CustomUserManager
-from .service import Service
-from django.core.validators import MinValueValidator, MaxValueValidator
 
+from core.utility.managers import CustomUserManager
+
+from .service import Service
 
 ROLES = {  # Roles that can be assigned to user
     ("customer", "Customer"),

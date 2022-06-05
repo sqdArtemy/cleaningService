@@ -1,5 +1,7 @@
 from django.contrib import admin
-from core.models import User, UserRole, Category, Service, Request, RequestStatus, Review, Notification
+
+from core.models import (Category, Notification, Request, RequestStatus,
+                         Review, Service, User, UserRole)
 
 
 # Admin registration for profiles.py------------------------------------------------------------------------------------

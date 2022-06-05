@@ -1,9 +1,10 @@
 from __future__ import absolute_import, unicode_literals
+
 import os
 
 from celery import Celery
-from django.conf import settings
 from celery.schedules import crontab
+from django.conf import settings
 
 # Set default django settings as settings for celery
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'final_project.settings.settings')

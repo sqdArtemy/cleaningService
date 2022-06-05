@@ -1,12 +1,16 @@
-import pytest
 import json
+
+import pytest
+from django.forms.models import model_to_dict
+
 from api.view import NotificationViewSet
+from core.models import Notification, Request, User
+
+from .default_tests import (default_test_create, default_test_delete,
+                            default_test_list, default_test_not_found,
+                            default_test_retrieve)
 from .factories import NotificationFactory
 from .fixtures import api_client, get_token
-from core.models import User, Request, Notification
-from .default_tests import default_test_delete, default_test_list, default_test_retrieve, default_test_not_found, \
-     default_test_create
-from django.forms.models import model_to_dict
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 

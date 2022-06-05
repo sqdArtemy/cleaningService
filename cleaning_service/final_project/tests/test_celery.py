@@ -1,6 +1,7 @@
 import pytest
-from final_project.celery import app
+
 from core.tasks import mail_sender_task
+from final_project.celery import app
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 

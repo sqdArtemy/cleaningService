@@ -1,6 +1,8 @@
 from django.db import models
+
 from .profiles import User
 from .request import Request
+
 
 class Notification(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)  # User who retrieves notification

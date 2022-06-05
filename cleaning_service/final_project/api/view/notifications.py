@@ -1,9 +1,10 @@
-from core.models import Notification, User, Request
-from api.serializers import NotificationSerializer
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from api.serializers import NotificationSerializer
+from core.models import Notification, Request, User
 
 
 class NotificationViewSet(viewsets.ModelViewSet):

@@ -1,5 +1,6 @@
-from django.db import models
 from django.core.validators import MinValueValidator
+from django.db import models
+
 
 class Category(models.Model):  # Model for category of a service
     naming = models.CharField(verbose_name="Category name", max_length=100, null=False)

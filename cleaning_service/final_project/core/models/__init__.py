@@ -1,7 +1,7 @@
 # Models
-from .profiles import User, UserRole
-from .service import Service, Category
-from .request import RequestStatus, Request
-from .reviews import Review
 from .notifications import Notification
 from .order import Order
+from .profiles import User, UserRole
+from .request import Request, RequestStatus
+from .reviews import Review
+from .service import Category, Service

@@ -1,5 +1,6 @@
 from django_filters import rest_framework as filters
-from core.models import User, Service
+
+from core.models import Service, User
 
 
 # Some base filters

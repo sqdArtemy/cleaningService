@@ -1,10 +1,15 @@
-import factory
 import sys
+
+import factory
 from django.forms.models import model_to_dict
 from factory.django import DjangoModelFactory
+
 sys.path.append('..')
-from core.models import User, UserRole, Request, RequestStatus, Service, Category, Review, Notification
 from django.core.files.base import ContentFile
+
+from core.models import (Category, Notification, Request, RequestStatus,
+                         Review, Service, User, UserRole)
+
 
 # Factories for service.py ---------------------------------------------------------------------------------------------
 class CategoryFactory(DjangoModelFactory):  # Factory creates random categories for services

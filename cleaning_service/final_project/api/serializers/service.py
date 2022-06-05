@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from core.models.service import Service, Category
+
+from core.models.service import Category, Service
 
 
 class CategorySerializer(serializers.ModelSerializer):

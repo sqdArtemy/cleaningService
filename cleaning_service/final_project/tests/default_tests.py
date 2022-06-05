@@ -1,7 +1,10 @@
 import json
+
 from django.forms.models import model_to_dict
-from .factories import UsersFactory, UserRoleFactory
-from core.models import User, Request
+
+from core.models import Request, User
+
+from .factories import UserRoleFactory, UsersFactory
 
 
 # Template function in order to test list view

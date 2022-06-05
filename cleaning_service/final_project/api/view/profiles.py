@@ -1,10 +1,12 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from api.serializers import CustomUserSerializer, UserRoleSerializer
-from core.models.profiles import User, UserRole, Service
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+
+from api.serializers import CustomUserSerializer, UserRoleSerializer
+from core.models.profiles import Service, User, UserRole
 from core.utility.filters import UserFilter
 
 

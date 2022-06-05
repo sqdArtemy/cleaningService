@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):  # Custom manager for overriding base user model
     def create_user(self, username, name, email, phone, role, password, **extra_fields):  # Creates common user
         if not email:

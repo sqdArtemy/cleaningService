@@ -1,13 +1,19 @@
-import pytest
 import json
 import sys
-from .factories import ReviewFactory
+
+import pytest
+
 from core.models import Review, User
+
+from .factories import ReviewFactory
+
 sys.path.append('..')
 from api.view import ReviewViewSet
+
+from .default_tests import (default_test_create, default_test_delete,
+                            default_test_list, default_test_not_authorized,
+                            default_test_not_found, default_test_retrieve)
 from .fixtures import api_client, get_token
-from .default_tests import default_test_delete, default_test_list, default_test_retrieve, default_test_create, \
-    default_test_not_found, default_test_not_authorized
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 

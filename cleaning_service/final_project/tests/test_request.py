@@ -1,15 +1,22 @@
-import pytest
 import json
 import sys
-from .fixtures import api_client, get_token
+
+import pytest
+
+from core.models import Request, RequestStatus, Service, User
+
 from .factories import RequestFactory, RequestStatusFactory
-from core.models import Request, RequestStatus, User, Service
+from .fixtures import api_client, get_token
+
 sys.path.append('..')
-from api.view import RequestViewSet, RequestStatusViewSet
-from .default_tests import default_test_delete, default_test_list, default_test_retrieve, default_test_create, \
-    default_test_not_found
 from django.db.models.signals import post_save
+
 from api.signals import company_notifier_signal
+from api.view import RequestStatusViewSet, RequestViewSet
+
+from .default_tests import (default_test_create, default_test_delete,
+                            default_test_list, default_test_not_found,
+                            default_test_retrieve)
 
 pytestmark = pytest.mark.django_db  # Links with django data base
 
@@ -53,8 +60,7 @@ class TestRequest:
         default_test_not_found(api_client=rf, viewset=RequestViewSet, factory=RequestFactory,
                                endpoint='request', get_token=get_token)
 
-
-    def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
+    def test_update(self, mocker, rf, get_token):  # <----------Tests updating an instance functionality
         post_save.disconnect(sender=Request, receiver=company_notifier_signal)
         old_request = RequestFactory()
         new_request = RequestFactory()
