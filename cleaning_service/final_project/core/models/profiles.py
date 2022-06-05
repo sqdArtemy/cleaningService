@@ -29,6 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     services = models.ManyToManyField(Service)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
+    hour_cost = models.FloatField(verbose_name="Cost per working hour", null=False, validators=(MinValueValidator(0),))
     rating = models.FloatField(verbose_name="Star-rating", default=0, null=False, validators=(
         MaxValueValidator(5), MinValueValidator(0)))
 

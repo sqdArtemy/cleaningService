@@ -6,7 +6,7 @@ import debug_toolbar
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from api.view import UserRoleViewSet, UserViewSet, ReviewViewSet, CategoryViewSet, ServiceViewSet, \
-    RequestStatusViewSet, RequestViewSet, NotificationViewSet
+    RequestStatusViewSet, RequestViewSet, NotificationViewSet, OrderViewSet
 
 
 # Swagger view
@@ -47,7 +47,10 @@ urlpatterns = [
     # Notification paths
     path('notifications/', NotificationViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('notification/<pk>', NotificationViewSet.as_view({'get': 'retrieve', 'delete': 'destroy',
-                                                           'put': 'partial_update'})),
+                                                       'put': 'partial_update'})),
+    # Order paths
+    path('orders/', OrderViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('order/<pk>', OrderViewSet.as_view({'get': 'retrieve', 'delete': 'destroy', 'put': 'partial_update'})),
     # JWT auth
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),

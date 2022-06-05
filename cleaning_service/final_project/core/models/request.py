@@ -25,14 +25,8 @@ class Request(models.Model):
     country = models.CharField(verbose_name="Country of request", max_length=100, null=False)
     city = models.CharField(verbose_name="City of request", max_length=100, null=False)
     address_details = models.CharField(verbose_name="District, street, house, apartment", max_length=250, null=False)
-    total_cost = models.FloatField(verbose_name="Final cost of the service", null=False)
-    company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company',
-                                null=True, blank=True)
-
-    # Overloading method save for calculating total cost of the request
-    def save(self, *args, **kwargs):
-        self.total_cost = float(self.total_area) * float(self.service.cost)
-        super().save(*args, **kwargs)
+    total_cost = models.FloatField(verbose_name="Final cost of the service", default=0)
+    company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company', null=True, blank=True)
 
     def __str__(self):
         return self.id

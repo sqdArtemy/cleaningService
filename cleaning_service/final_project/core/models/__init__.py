@@ -4,3 +4,4 @@ from .service import Service, Category
 from .request import RequestStatus, Request
 from .reviews import Review
 from .notifications import Notification
+from .order import Order

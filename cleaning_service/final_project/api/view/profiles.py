@@ -48,7 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
                                             role=self.get_role(data['role']), country=data['country'],
                                             city=data['city'], address_details=data['address_details'],
                                             username=data['username'], password=data['password'], rating=data['rating'],
-                                            profile_pic=data['profile_pic'])
+                                            profile_pic=data['profile_pic'], hour_cost=data['hour_cost'])
         new_user.save()
 
         if 'services' in data:  # If user have services -> process and add it to the User object
@@ -71,6 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):  # ViewSet
         user.role = user.role
         user.rating = data['rating']
         user.profile_pic = data['profile_pic']
+        user.hour_cost = data['hour_cost']
         user.set_password(user.password)
         user.save()
 
