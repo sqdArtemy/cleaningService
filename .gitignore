@@ -130,3 +130,7 @@ dmypy.json
 
 # Secret key
 secret_data.py
+
+# Media folders
+profile_pictures
+services_pictures
