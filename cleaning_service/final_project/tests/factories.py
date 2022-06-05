@@ -3,7 +3,7 @@ import sys
 from django.forms.models import model_to_dict
 from factory.django import DjangoModelFactory
 sys.path.append('..')
-from core.models import User, UserRole, Request, RequestStatus, Service, Category, Review
+from core.models import User, UserRole, Request, RequestStatus, Service, Category, Review, Notification
 from django.core.files.base import ContentFile
 
 # Factories for service.py ---------------------------------------------------------------------------------------------
@@ -96,3 +96,16 @@ class ReviewFactory(DjangoModelFactory):
     feedback = factory.faker.Faker('text')
     rate = factory.faker.Faker('pyint', min_value=1, max_value=5)
     created_at = factory.faker.Faker('date_time')
+
+
+# Factories for notifications.py ---------------------------------------------------------------------------------------
+class NotificationFactory(DjangoModelFactory):
+    class Meta:
+        model = Notification
+
+    user = factory.SubFactory(UsersFactory)
+    seen = True
+    header = factory.faker.Faker('text')
+    text = factory.faker.Faker('text')
+    request = factory.SubFactory(RequestFactory)
+    accepted = False
