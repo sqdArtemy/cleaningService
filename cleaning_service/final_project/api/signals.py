@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from core.models import Notification, Order, Request, User, UserRole
+from core.models import Notification, Order, Request, User, UserRole, RequestStatus
 from core.tasks import mail_sender_task
 
 
@@ -38,10 +38,7 @@ def company_notifier_signal(sender, instance: Request, **kwargs):
 # Receive signals when company accepts offer from its notification:
 @receiver(post_save, sender=Notification)
 def customer_notifier_signal(sender, instance: Notification, **kwargs):
-    print("heey")
-    print(instance.accepted == '1')
     if instance.accepted == '1' and instance.user.role.role == 'Company':
-        print('HEEEY')
         # Making data
         user = (instance.request.customer,)
         header = f'New response to your request: {instance.request.id} !'
@@ -52,3 +49,16 @@ def customer_notifier_signal(sender, instance: Notification, **kwargs):
 
         # Process notifications
         notification_maker(request=instance.request, header=header, text=text, users=user)
+
+
+# Receives signal from order and make changes in a request
+@receiver(post_save, sender=Order)
+def request_changer(sender, instance: Order, **kwargs):
+    if instance.accepted == '1' and instance.notification.request.status.status == 'Pending':
+        # Changing parameters of a request
+        instance.request.total_cost = instance.total_cost
+        instance.request.company = instance.notification.user
+        instance.request.status = RequestStatus.objects.get(status='Accepted')
+        instance.request.save()
+    else:
+        raise "Request is already processing by another company!"
