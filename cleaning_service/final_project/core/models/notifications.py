@@ -11,6 +11,3 @@ class Notification(models.Model):
     text = models.TextField(verbose_name='Text of the notification', null=False)
     request = models.ForeignKey(to=Request, on_delete=models.CASCADE,  related_name='Request')
     accepted = models.BooleanField(verbose_name="Request was accepted", default=False)
-
-    def __str__(self):
-        return self.id

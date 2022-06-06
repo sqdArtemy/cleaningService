@@ -35,6 +35,3 @@ class Request(models.Model):
                                                          validators=(MinValueValidator(0), MaxValueValidator(5)))
     max_hour_price = models.FloatField(verbose_name="Maximum affordable price per hour", default=100,
                                        validators=(MinValueValidator(0.1),))
-
-    def __str__(self):
-        return self.id

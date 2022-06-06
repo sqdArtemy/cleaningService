@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from core.models import Service, User
+from core.models import Service, User, Order
 
 
 # Some base filters
@@ -28,3 +28,14 @@ class ServiceFilter(filters.FilterSet):
     class Meta:
         model = Service
         fields = ('cost',)
+
+
+# Filters for order model
+class OrderFilter(filters.FilterSet):
+    total_cost = filters.RangeFilter()
+    request = filters.NumberFilter()
+    accepted = filters.BooleanFilter()
+
+    class Meta:
+        model = Order
+        fields = ('total_cost', 'request', 'accepted')

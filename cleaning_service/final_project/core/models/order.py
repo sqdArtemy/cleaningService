@@ -24,6 +24,3 @@ class Order(models.Model):
                           float(self.notification.request.service.hours_required) * \
                           float(self.notification.user.hour_cost)
         super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.id

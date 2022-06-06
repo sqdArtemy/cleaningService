@@ -1,14 +1,18 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.serializers import OrderSerializer
 from core.models import Notification, Order
+from core.utility.filters import OrderFilter
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = OrderSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = OrderFilter
 
     def get_queryset(self):
         orders = Order.objects.select_related('request', 'company', 'notification')
