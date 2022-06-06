@@ -26,7 +26,8 @@ class ServiceViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ServiceFilter
 
-    def get_category(self, naming):  # Obtaining company object
+    @staticmethod
+    def get_category(naming):  # Obtaining company object
         return Category.objects.get(naming=naming)
 
     def get_queryset(self):

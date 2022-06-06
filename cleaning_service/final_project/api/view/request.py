@@ -25,13 +25,16 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = RequestSerializer
 
-    def get_status(self, status):  # Obtaining request status object
+    @staticmethod
+    def get_status(status):  # Obtaining request status object
         return RequestStatus.objects.get(status=status)
 
-    def get_service(self, name):  # Obtaining service object
+    @staticmethod
+    def get_service(name):  # Obtaining service object
         return Service.objects.get(name=name)
 
-    def get_user(self, username):  # Obtaining user object
+    @staticmethod
+    def get_user(username):  # Obtaining user object
         return User.objects.get(username=username)
 
     def get_queryset(self):
@@ -43,17 +46,21 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
 
         new_request = Request.objects.create(customer=self.get_user(data["customer"]), total_area=data['total_area'],
                                              service=self.get_service(data['service']), country=data['country'],
-                                             status=self.get_status(data['status']), city=data['city'],
-                                             address_details=data['address_details'], company=None)
-        if 'no_signal' not in data: post_save.connect(receiver=company_notifier_signal, sender=Request)
+                                             status=self.get_status(data['status']), city=data['city'], company=None,
+                                             address_details=data['address_details'],
+                                             max_hour_price=data['max_hour_price'],
+                                             min_rating_needed=data['min_rating_needed'])
+
+        if 'no_signal' not in data:  # Sending signal if it is not test
+            post_save.connect(receiver=company_notifier_signal, sender=Request)
         new_request.save()
+
         # Disconnecting signal to avoid repetitive emitting
         post_save.disconnect(receiver=company_notifier_signal, sender=Request)
         serializer = RequestSerializer(new_request)
         return Response(serializer.data)
 
-
-    def update(self, request, pk):
+    def update(self, request: Request, pk):
         data = request.data
         request_object = Request.objects.all()
         request = get_object_or_404(request_object, pk=pk)
@@ -67,6 +74,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request.city = data['city']
         request.company = self.get_user(data['company'])
         request.address_details = data['address_details']
+        request.min_rating_needed = data['min_rating_needed']
+        request.max_hour_price = data['max_hour_price']
         request.save()
 
         serializer = RequestSerializer(request)

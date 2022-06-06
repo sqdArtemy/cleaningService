@@ -3,6 +3,8 @@ from django.db import models
 from .profiles import User
 from .service import Service
 
+from django.core.validators import MaxValueValidator, MinValueValidator
+
 STATUSES = {  # Statuses of the request
     ("pending", "Pending"),
     ("accepted", "Accepted"),
@@ -29,6 +31,10 @@ class Request(models.Model):
     address_details = models.CharField(verbose_name="District, street, house, apartment", max_length=250, null=False)
     total_cost = models.FloatField(verbose_name="Final cost of the service", default=0)
     company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company', null=True, blank=True)
+    min_rating_needed = models.PositiveSmallIntegerField(verbose_name="Minimum required company`s rating", default=0,
+                                                         validators=(MinValueValidator(0), MaxValueValidator(5)))
+    max_hour_price = models.FloatField(verbose_name="Maximum affordable price per hour", default=100,
+                                       validators=(MinValueValidator(0.1),))
 
     def __str__(self):
         return self.id

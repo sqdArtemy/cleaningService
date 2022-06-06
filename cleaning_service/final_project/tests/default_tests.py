@@ -73,6 +73,7 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
     assert response.status_code == 200
     assert json_response == expected_json
 
+
 def default_test_create(api_client, factory, endpoint, model, get_token, foreign_keys=None, has_date=None):
     obj = factory()
 

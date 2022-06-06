@@ -8,11 +8,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = ('user', 'header', 'text', 'request', 'seen', 'accepted')
 
-    user = serializers.SerializerMethodField()
-    request = serializers.SerializerMethodField()
+    user = serializers.CharField(source="user.username")
 
-    def get_user(self, notification):
+    @staticmethod
+    def get_user(notification):
         return notification.user.username
-
-    def get_request(self, notification):
-        return notification.request.id

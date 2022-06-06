@@ -14,7 +14,8 @@ class ServiceSerializer(serializers.ModelSerializer):
         model = Service
         fields = ('name', 'hours_required', 'category', 'picture', 'description')
 
-    category = serializers.SerializerMethodField()
+    category = serializers.CharField(source='category.naming')
 
-    def get_category(self, service):
+    @staticmethod
+    def get_category(service):
         return service.category.naming

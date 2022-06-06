@@ -12,24 +12,29 @@ class RequestStatusSerializer(serializers.ModelSerializer):
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
-        fields = ['service', 'customer', 'status', 'total_area', 'total_cost', 'address_details', 'country', 'city',
-                  'company']
+        fields = ('service', 'customer', 'status', 'total_area', 'total_cost', 'address_details', 'country', 'city',
+                  'company', 'min_rating_needed', 'max_hour_price')
 
-    status = serializers.SerializerMethodField()
-    customer = serializers.SerializerMethodField()
-    service = serializers.SerializerMethodField()
+    status = serializers.CharField(source='status.status')
+    customer = serializers.CharField(source='customer.username')
+    service = serializers.CharField(source='service.name')
     company = serializers.SerializerMethodField()
 
-    def get_status(self, request):
+    @staticmethod
+    def get_status(request):
         return request.status.status
-    def get_customer(self, request):
+
+    @staticmethod
+    def get_customer(request):
         return request.customer.username
-    def get_service(self, request):
+
+    @staticmethod
+    def get_service(request):
         return request.service.name
-    def get_company(self, request):
+
+    @staticmethod
+    def get_company(request):
         try:
             return request.company.username
         except AttributeError:
             return None
-
-

@@ -6,9 +6,10 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from api.view import (CategoryViewSet, NotificationViewSet, OrderViewSet,
-                      RequestStatusViewSet, RequestViewSet, ReviewViewSet,
-                      ServiceViewSet, UserRoleViewSet, UserViewSet)
+from api.view import (CategoryViewSet, NotificationViewSet, OrderViewSet, RequestStatusViewSet, RequestViewSet,
+                      ReviewViewSet, ServiceViewSet, UserRoleViewSet, UserViewSet)
+
+from api.view.profiles import create
 
 # Swagger view
 schema_view = get_schema_view(
@@ -28,7 +29,8 @@ urlpatterns = [
     path('user_roles/', UserRoleViewSet.as_view({'get': 'list'})),
     path('user_role/<pk>', UserRoleViewSet.as_view({'get': 'retrieve'})),
     # User paths
-    path('users/', UserViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('users/create', create),
+    path('users/', UserViewSet.as_view({'get': 'list'})),
     path('user/<pk>', UserViewSet.as_view({'get': 'retrieve', 'delete': 'destroy', 'put': 'update'})),
     # Request status paths
     path('request_statuses/', RequestStatusViewSet.as_view({'get': 'list'})),

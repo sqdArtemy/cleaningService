@@ -27,12 +27,13 @@ class User(AbstractBaseUser, PermissionsMixin):  # Base user`s model overriding
     country = models.CharField(verbose_name="Country", max_length=50, null=False)
     city = models.CharField(verbose_name="City", max_length=50, null=False)
     address_details = models.CharField(verbose_name="District, house, apartment", max_length=256, null=False)
-    services = models.ManyToManyField(Service)
+    services = models.ManyToManyField(verbose_name="Company`s services", to=Service)
     phone = models.CharField(verbose_name="User`s phone", max_length=100, null=False, default="0")
     role = models.ForeignKey(to=UserRole, on_delete=models.CASCADE, null=False)
     hour_cost = models.FloatField(verbose_name="Cost per working hour", null=False, validators=(MinValueValidator(0),))
     rating = models.FloatField(verbose_name="Star-rating", default=0, null=False, validators=(
         MaxValueValidator(5), MinValueValidator(0)))
+    users_rated = models.PositiveIntegerField(verbose_name="Number of user rated", default=0)
 
     # User`s rights
     is_superuser = models.BooleanField(default=False)

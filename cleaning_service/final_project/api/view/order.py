@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -15,8 +14,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         orders = Order.objects.select_related('request', 'company', 'notification')
         return orders
 
-    def get_notification(self, id):
-        return Notification.objects.get(id=id)
+    @staticmethod
+    def get_notification(id_):
+        return Notification.objects.get(id=id_)
 
     def create(self, request, *args, **kwargs):
         data = request.data
