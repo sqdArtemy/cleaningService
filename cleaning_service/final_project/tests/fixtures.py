@@ -21,8 +21,8 @@ def get_token():
 
     return token
 
+
 @pytest.fixture  # Let us interact with DRF endpoints
 def api_client():
     client = APIClient()
     return client
-

@@ -8,10 +8,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ['request', 'customer', 'feedback', 'rate', 'created_at']
 
-    customer = serializers.SerializerMethodField()
+    customer = serializers.CharField(source='customer.username')
     request = serializers.SerializerMethodField()
 
-    def get_customer(self, review):
+    @staticmethod
+    def get_customer(review):
         return review.customer.username
-    def get_request(self, review):
+
+    @staticmethod
+    def get_request(review):
         return review.request.id

@@ -4,7 +4,7 @@ from core.models import Service, User, Order
 
 
 # Some base filters
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):  # Declaring filter for Many to many fileds
+class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):  # Declaring filter for Many to many fields
     pass
 
 

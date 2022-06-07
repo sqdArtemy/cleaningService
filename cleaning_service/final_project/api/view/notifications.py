@@ -11,11 +11,13 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = NotificationSerializer
 
-    def get_user(self, username):
+    @staticmethod
+    def get_user(username):
         return User.objects.filter(username=username).first()
 
-    def get_request(self, id):
-        return Request.objects.get(id=id)
+    @staticmethod
+    def get_request(id_):
+        return Request.objects.get(id=id_)
 
     def get_queryset(self):
         notifications = Notification.objects.select_related('user', 'request')
