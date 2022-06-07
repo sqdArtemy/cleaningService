@@ -5,13 +5,13 @@ from .service import Service
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-STATUSES = {  # Statuses of the request
+STATUSES = (  # Statuses of the request
     ("pending", "Pending"),
     ("accepted", "Accepted"),
     ("in_progress", "In progress"),
     ("completed", "Completed"),
     ("canceled", "Canceled"),
-}
+)
 
 
 class RequestStatus(models.Model):

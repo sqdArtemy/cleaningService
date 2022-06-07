@@ -11,9 +11,7 @@ class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):  # Declaring
 # Filters for user model
 class UserFilter(filters.FilterSet):
     rating = filters.RangeFilter()
-    city = filters.CharFilter()
     role = filters.CharFilter(field_name='role__role')
-    country = filters.CharFilter()
     services = CharFilterInFilter(field_name='services__name', lookup_expr='in')
 
     class Meta:
@@ -33,8 +31,6 @@ class ServiceFilter(filters.FilterSet):
 # Filters for order model
 class OrderFilter(filters.FilterSet):
     total_cost = filters.RangeFilter()
-    request = filters.NumberFilter()
-    accepted = filters.BooleanFilter()
 
     class Meta:
         model = Order

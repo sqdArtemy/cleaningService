@@ -47,33 +47,14 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
         obj.save()
 
     def update(self, request, pk, *args, **kwargs):
-        data: dict = request.data
-        services = data.pop('services', None)
-        # TODO: try using >>> user = self.get_object()
-        user_object = self.get_queryset()
-        user = get_object_or_404(user_object, pk=pk)
+        services = request.data.pop('services')
+        user = self.get_object()
+        serializer = CustomUserSerializer(data=request.data, instance=user)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.update(serializer.validated_data, services, pk)
+        serializer = CustomUserSerializer(instance=user)
 
-        # for key, value in data.items():
-        #     setattr(user, key, value)
-
-        user.username = data['username']
-        user.name = data['name']
-        user.country = data['country']
-        user.city = data['city']
-        user.address_details = data['address_details']
-        user.phone = data['phone']
-        user.rating = data['rating']
-        user.profile_pic = data['profile_pic']
-        user.hour_cost = data['hour_cost']
-        user.set_password(data.get('password'))
-
-        user.save()
-
-        if services is not None:  # If user have services -> process and add it to the User object
-            self.services_setter(services, user)
-
-        serializer = CustomUserSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # Separate declaration of create method is needed to create new user without authorization,

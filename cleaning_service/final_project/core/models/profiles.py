@@ -6,10 +6,10 @@ from core.utility.managers import CustomUserManager
 
 from .service import Service
 
-ROLES = {  # Roles that can be assigned to user
+ROLES = (  # Roles that can be assigned to user
     ("customer", "Customer"),
     ("company", "Company"),
-}
+)
 
 
 class UserRole(models.Model):  # User role (Customer or company)
