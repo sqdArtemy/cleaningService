@@ -13,7 +13,7 @@ class Review(models.Model):
     feedback = models.TextField(verbose_name="Customer`s feedback", null=False)
     rate = models.PositiveSmallIntegerField(verbose_name="Star-rating", default=0, null=False, validators=(
         MaxValueValidator(5), MinValueValidator(0)))
-    created_at = models.DateTimeField(verbose_name="Time of creation", auto_now_add=True, null=False)
+    created_at = models.DateTimeField(verbose_name="Time of creation", default=datetime.now(), null=False)
 
     def __str__(self):
         return f"{self.request}-{self.rate}"

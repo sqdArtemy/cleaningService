@@ -1,7 +1,6 @@
 import json
 
 import pytest
-from django.forms.models import model_to_dict
 
 from api.view import NotificationViewSet
 from core.models import Notification, Request, User

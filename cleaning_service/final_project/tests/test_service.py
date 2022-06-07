@@ -63,9 +63,10 @@ class TestService:
         new_service = ServiceFactory()
         service_dict = {
             'name': new_service.name,
-            'cost': new_service.cost,
+            'hours_required': new_service.hours_required,
             'category': new_service.category.naming,
             'picture': str(new_service.picture),
+            'description': new_service.description,
         }
 
         request = rf.put(

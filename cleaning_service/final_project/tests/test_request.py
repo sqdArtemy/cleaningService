@@ -1,5 +1,4 @@
 import json
-import sys
 
 import pytest
 
@@ -7,10 +6,7 @@ from core.models import Request, RequestStatus, Service, User
 
 from .factories import RequestFactory, RequestStatusFactory
 from .fixtures import api_client, get_token
-
-sys.path.append('..')
 from django.db.models.signals import post_save
-
 from api.signals import company_notifier_signal
 from api.view import RequestStatusViewSet, RequestViewSet
 
@@ -73,6 +69,8 @@ class TestRequest:
             'city': new_request.city,
             'country': new_request.country,
             'company': new_request.company.username,
+            'min_rating_needed': new_request.min_rating_needed,
+            'max_hour_price': new_request.max_hour_price,
         }
 
         request = rf.put(

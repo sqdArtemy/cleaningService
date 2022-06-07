@@ -1,14 +1,11 @@
-import sys
-
 import factory
-from django.forms.models import model_to_dict
+from django.core.files.base import ContentFile
 from factory.django import DjangoModelFactory
 
-sys.path.append('..')
-from django.core.files.base import ContentFile
 
-from core.models import (Category, Notification, Request, RequestStatus,
-                         Review, Service, User, UserRole)
+from core.models import (Category, Notification, Request, RequestStatus, Review, Service, User, UserRole, Order)
+
+fake_data = factory.faker.Faker  # Just for better comprehension
 
 
 # Factories for service.py ---------------------------------------------------------------------------------------------
@@ -16,22 +13,23 @@ class CategoryFactory(DjangoModelFactory):  # Factory creates random categories 
     class Meta:
         model = Category
 
-    naming = factory.faker.Faker('color')
+    naming = fake_data('color')
 
 
 class ServiceFactory(DjangoModelFactory):  # This factory creates services with random data
     class Meta:
         model = Service
 
-    name = factory.faker.Faker('company')
+    name = fake_data('email')
     category = factory.SubFactory(CategoryFactory)
-    cost = factory.faker.Faker('pyint')
+    hours_required = fake_data('pyint')
+    description = fake_data('text')
     picture = factory.LazyAttribute(  # Faking some picture
-            lambda _: ContentFile(
-                factory.django.ImageField()._make_data(
-                    {'width': 1024, 'height': 768}
-                ), 'example.jpg')
-            )
+        lambda _: ContentFile(
+            factory.django.ImageField()._make_data(
+                {'width': 1024, 'height': 768}
+            ), 'example.jpg')
+    )
 
 
 # Factories for profiles.py --------------------------------------------------------------------------------------------
@@ -46,16 +44,18 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     class Meta:
         model = User
 
-    username = factory.faker.Faker('email')
-    name = factory.faker.Faker('first_name')
-    email = factory.faker.Faker('email')
-    phone = factory.faker.Faker('phone_number')
-    country = factory.faker.Faker('country')
-    city = factory.faker.Faker('city')
-    address_details = factory.faker.Faker('address')
+    username = fake_data('email')
+    name = fake_data('first_name')
+    email = fake_data('email')
+    phone = fake_data('phone_number')
+    country = fake_data('country')
+    city = fake_data('city')
+    address_details = fake_data('address')
     role = factory.SubFactory(UserRoleFactory)
-    password = factory.faker.Faker('password')
-    rating = factory.faker.Faker('pyint', min_value=1, max_value=5)
+    password = fake_data('password')
+    rating = fake_data('pyint', min_value=1, max_value=5)
+    hour_cost = fake_data('pyint')
+    users_rated = fake_data('pyint')
     profile_pic = None
 
     @factory.post_generation
@@ -66,7 +66,7 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
 
         if extracted:
             # A list of services were passed in, use them
-                self.services.add(*extracted)
+            self.services.add(*extracted)
 
 
 # Factories for request.py ---------------------------------------------------------------------------------------------
@@ -85,10 +85,12 @@ class RequestFactory(DjangoModelFactory):  # This factory creates requests with 
     customer = factory.SubFactory(UsersFactory)
     status = factory.SubFactory(RequestStatusFactory)
     company = factory.SubFactory(UsersFactory)
-    country = factory.faker.Faker('country')
-    city = factory.faker.Faker('city')
-    address_details = factory.faker.Faker('address')
-    total_area = factory.faker.Faker('pyint')
+    country = fake_data('country')
+    city = fake_data('city')
+    address_details = fake_data('address')
+    total_area = fake_data('pyint')
+    min_rating_needed = fake_data('pyint')
+    max_hour_price = fake_data('pyint')
 
 
 # Factories for reviews.py ---------------------------------------------------------------------------------------------
@@ -98,9 +100,9 @@ class ReviewFactory(DjangoModelFactory):
 
     request = factory.SubFactory(RequestFactory)
     customer = factory.SubFactory(UsersFactory)
-    feedback = factory.faker.Faker('text')
-    rate = factory.faker.Faker('pyint', min_value=1, max_value=5)
-    created_at = factory.faker.Faker('date_time')
+    feedback = fake_data('text')
+    rate = fake_data('pyint', min_value=1, max_value=5)
+    created_at = fake_data('date_time')
 
 
 # Factories for notifications.py ---------------------------------------------------------------------------------------
@@ -110,7 +112,16 @@ class NotificationFactory(DjangoModelFactory):
 
     user = factory.SubFactory(UsersFactory)
     seen = True
-    header = factory.faker.Faker('text')
-    text = factory.faker.Faker('text')
+    header = fake_data('text')
+    text = fake_data('text')
     request = factory.SubFactory(RequestFactory)
+    accepted = False
+
+
+# Factories for order.py -----------------------------------------------------------------------------------------------
+class OrderFactory(DjangoModelFactory):
+    class Meta:
+        model = Order
+
+    notification = factory.SubFactory(NotificationFactory)
     accepted = False

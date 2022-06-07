@@ -2,7 +2,7 @@ import json
 
 from django.forms.models import model_to_dict
 
-from core.models import Request, User
+from core.models import Request, User, Service
 
 from .factories import UserRoleFactory, UsersFactory
 
@@ -18,7 +18,8 @@ def default_test_list(api_client, factory, endpoint, viewset, get_token):
     response = view(request).render()
 
     # Add 1 to the counter because of AUTH user account
-    if factory == UsersFactory or factory == UserRoleFactory: amount += 1
+    if factory == UsersFactory or factory == UserRoleFactory:
+        amount += 1
 
     # Comparing results
     assert response.status_code == 200
@@ -29,10 +30,11 @@ def default_test_list(api_client, factory, endpoint, viewset, get_token):
 def default_test_delete(api_client, factory, endpoint, model, get_token):
     # Arrange
     amount = 0
-    if model == User: amount += 1
-    object = factory
+    if model == User:  # Because authentication creates one more User instance
+        amount += 1
+    obj = factory
 
-    response = api_client.delete(f'{endpoint}/{object.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
+    response = api_client.delete(f'{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
     # Comparing results
     assert response.status_code == 204
@@ -42,22 +44,23 @@ def default_test_delete(api_client, factory, endpoint, model, get_token):
 # Template test for retrieve functionality
 def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, foreign_keys=None, has_date=None):
     # Arrange
-    object = factory()
-    request = api_client.get(f'/{endpoint}/{object.id}', {}, HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
+    obj = factory()
+    request = api_client.get(f'/{endpoint}/{obj.id}', {}, HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
     # converts model instance into expected fields
-    expected_json = model_to_dict(instance=object, exclude=("id", "password", "is_active", 'is_staff', 'is_superuser',
-                                                            'last_login', 'groups', 'user_permissions'))
+    expected_json = model_to_dict(instance=obj, exclude=("id", "password", "is_active", 'is_staff', 'is_superuser',
+                                                         'last_login', 'groups', 'user_permissions'))
 
     # If model has a picture => refactor it to appropriate format
-    if 'picture' in expected_json: expected_json['picture'] = str(expected_json['picture'])
+    if 'picture' in expected_json:
+        expected_json['picture'] = str(expected_json['picture'])
 
     if foreign_keys is not None:  # Substituting foreign keys ID`s with serializer`s representation
         for item in foreign_keys.keys():
             expected_json[item] = str(foreign_keys[item].objects.get(id=expected_json[item]))
 
     view = viewset.as_view({'get': 'retrieve'})
-    response = view(request, pk=object.id).render()
+    response = view(request, pk=obj.id).render()
 
     json_response = json.loads(response.content)
 
@@ -67,7 +70,8 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
         expected_json['created_at'] = json.dumps(expected_json['created_at'], indent=4, sort_keys=True, default=str)
 
     # Adding media root to expected output
-    if 'picture' in expected_json: expected_json['picture'] = 'http://testserver/media/' + str(expected_json['picture'])
+    if 'picture' in expected_json:
+        expected_json['picture'] = 'http://testserver/media/' + str(expected_json['picture'])
 
     # Comparing results
     assert response.status_code == 200
@@ -80,13 +84,12 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
     expected_json = model_to_dict(instance=obj, exclude="id")
     expected_json['no_signal'] = 'no_signal'  # Adding marker to disable signals
 
-    # If model has a picture => refactor it to appropriate format
-    if 'picture' in expected_json: expected_json['picture'] = str(expected_json['picture'])
+    if 'picture' in expected_json:  # If model has a picture => refactor it to appropriate format
+        expected_json['picture'] = str(expected_json['picture'])
 
-    # Formatting date
-    if has_date is not None:
-        date = json.dumps(obj.created_at, indent=4, sort_keys=True, default=str)
-        expected_json['created_at'] = date.replace(' ', 'T').replace('"', '') + 'Z'
+    if model == Service:  # If service is passed change service name in order to avoid creating of same services
+        obj.name = 'something_different'
+        obj.save()
 
     if foreign_keys is not None:  # Substituting foreign keys ID`s with serializer`s representation
         for item in foreign_keys.keys():
@@ -98,16 +101,22 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
         format='json',
         HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
     )
-    if model == Request: expected_json['company'] = None  # When request created this field should be empty
+    json_response = json.loads(response.content)
 
-    # Adding media root to expected output
-    if 'picture' in expected_json: expected_json['picture'] = '/media/' + str(expected_json['picture'])
+    if model == Request:  # When request created this field should be empty
+        expected_json['company'] = None
+
+    if 'picture' in expected_json:  # Adding media root to expected output
+        expected_json['picture'] = f"/media/{str(expected_json['picture'])}"
 
     del expected_json['no_signal']  # Removing marker
-    expected_json
+
+    if has_date is not None:  # Formatting date because both objects were created at different time
+        expected_json['created_at'] = json_response['created_at']
+
     # Comparing results
     assert response.status_code == 200
-    assert json.loads(response.content) == expected_json
+    assert json_response == expected_json
     assert model.objects.count() == 2
 
 
@@ -116,20 +125,17 @@ def default_test_not_found(api_client, factory, endpoint, viewset, get_token):
     obj = factory()
     request = api_client.get(f'/{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
-    expected_json = model_to_dict(instance=obj)
-
     view = viewset.as_view({'get': 'retrieve'})
     response = view(request, pk=(obj.id + 1)).render()
 
     assert response.status_code == 404
 
+
 # Default test for case, when user is not authenticated
 def default_test_not_authorized(api_client, factory, endpoint):
-    object = factory()
+    obj = factory()
 
-    response = api_client.delete(f'/{endpoint}/{object.id}')
+    response = api_client.delete(f'/{endpoint}/{obj.id}')
 
     # Comparing results
     assert response.status_code == 401
-
-

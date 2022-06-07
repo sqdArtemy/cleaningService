@@ -1,17 +1,11 @@
 import json
-import sys
-
 import pytest
 
 from core.models import Review, User
 
 from .factories import ReviewFactory
-
-sys.path.append('..')
 from api.view import ReviewViewSet
-
-from .default_tests import (default_test_create, default_test_delete,
-                            default_test_list, default_test_not_authorized,
+from .default_tests import (default_test_create, default_test_delete, default_test_list, default_test_not_authorized,
                             default_test_not_found, default_test_retrieve)
 from .fixtures import api_client, get_token
 
@@ -51,7 +45,7 @@ class TestReview:
         request_dict = {
             'feedback': new_review.feedback,
             'rate': new_review.rate,
-            'created_at': json.dumps(new_review.created_at, indent=4, sort_keys=True, default=str),
+            'created_at': json.dumps(old_review.created_at, indent=4, sort_keys=True, default=str),
             'customer': old_review.customer.username,
             'request': old_review.request.id,
         }
@@ -69,6 +63,9 @@ class TestReview:
 
         view = ReviewViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_review.id).render()
+
+        # Formatting date in required data
+        request_dict['created_at'] = f"""{request_dict['created_at'].replace(' ', 'T').replace('"','')}Z"""
 
         assert response.status_code == 200
         assert json.loads(response.content) == request_dict
