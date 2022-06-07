@@ -12,6 +12,7 @@ class UserRoleSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    # Setting fields which are going to be excluded for each role
     COMPANY_EXCLUDE_FIELDS = {}
     CUSTOMER_EXCLUDE_FIELDS = {'hour_cost', 'users_rated', 'rating', 'services'}
 
@@ -28,14 +29,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        arg = args[0]
-        if isinstance(arg, User):  # If we ask for 1 object, not queryset
-            # Decide which role user has and which field we are going to exclude
-            exclude = self.CUSTOMER_EXCLUDE_FIELDS if arg.role.role == "Customer" else self.COMPANY_EXCLUDE_FIELDS
+        if len(args) is not 0:
+            arg = args[0]
+            if isinstance(arg, User):  # If we ask for 1 object, not queryset
+                # Decide which role user has and which field we are going to exclude
+                exclude = self.CUSTOMER_EXCLUDE_FIELDS if arg.role.role == "Customer" else self.COMPANY_EXCLUDE_FIELDS
 
-            existing = set(self.fields)  # Get all fields
-            for field_name in existing.intersection(exclude):  # Exclude particular fields which we are not going to see
-                self.fields.pop(field_name)
+                existing = set(self.fields)  # Get all fields
+                # Exclude particular fields which we are not going to see
+                for field_name in existing.intersection(exclude):
+                    self.fields.pop(field_name)
 
     @staticmethod
     def services_setter(services: list[str], obj):  # Function which properly sets many-to-many services
@@ -49,6 +52,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     # Overloading create func in order to set up password correctly and if extra args are passed -> they ignored
     def create(self, data: dict, services: list[str]):
+        # Getting data
         role_data = data.pop('role').get('role')
         role = UserRole.objects.filter(role=role_data).first()
 
@@ -61,9 +65,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return new_user
 
     def update(self, data: dict, services: list[str], pk):
+        # Getting data
         role_data = data.pop('role').get('role')
         role = UserRole.objects.filter(role=role_data).first()
-        user = get_object_or_404(User.objects.select_related('role').prefetch_related('services__category'), pk=pk)
+        user = self.instance
 
         # Setting new data
         password = data.pop('password')
