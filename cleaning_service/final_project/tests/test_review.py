@@ -1,7 +1,4 @@
-import json
 import pytest
-
-from django.utils import timezone
 
 from core.models import Review, User
 
@@ -41,7 +38,7 @@ class TestReview:
     def test_not_authenticated(self, api_client):
         default_test_not_authorized(api_client=api_client, factory=ReviewFactory, endpoint='review')
 
-    def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
+    def test_update(self, rf, get_token):   # <----------Tests updating an instance functionality
         old_review = ReviewFactory()
         new_review = ReviewFactory()
 

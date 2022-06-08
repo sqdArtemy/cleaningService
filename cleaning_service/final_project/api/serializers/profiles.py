@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.serializers.service import ServiceSerializer
@@ -63,7 +62,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             if len(services[0]) != 0:
                 self.services_setter(services, new_user)
 
-        new_user.picture=picture
+        new_user.picture = picture
         new_user.save()
         return new_user
 

@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from django.http import QueryDict
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, decorators, mixins, status

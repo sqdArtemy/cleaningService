@@ -8,6 +8,7 @@ factory-boy==3.2.1
 pytest==7.1.2
 pytest-django==4.5.2
 pytest-mock==3.7.0
+pytest-cov==3.0.0
 celery==5.2.7
 django-celery-beat==2.2.1
 amqp==5.1.1

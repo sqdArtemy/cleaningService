@@ -1,8 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import PermissionDenied
-from rest_framework.response import Response
-from rest_framework import status
 
 from core.models import Notification, Order, Request, User, UserRole, RequestStatus
 from core.tasks import mail_sender_task
