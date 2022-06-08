@@ -55,18 +55,22 @@ class CustomUserSerializer(serializers.ModelSerializer):
         # Getting data
         role_data = data.pop('role').get('role')
         role = UserRole.objects.filter(role=role_data).first()
+        picture = data.pop('picture')
 
         new_user = User.objects.create_user(role=role, **data)
 
-        if services is not None:  # If user have services -> process and add it to the User object
-            self.services_setter(services, new_user)
+        if len(services) != 0:  # If user have services -> process and add it to the User object
+            if len(services[0]) != 0:
+                self.services_setter(services, new_user)
 
+        new_user.picture=picture
         new_user.save()
         return new_user
 
     def update(self, data: dict, services: list[str], pk):
         # Getting data
         role_data = data.pop('role').get('role')
+        picture = data.pop('picture')
         role = UserRole.objects.filter(role=role_data).first()
         user = self.instance
 
@@ -76,9 +80,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
             setattr(user, key, value)
         user.role = role
         user.set_password(password)
+        user.picture = picture
 
-        if services is not None:  # If user have services -> process and add it to the User object
-            self.services_setter(services, user)
+        if len(services) != 0:  # If user have services -> process and add it to the User object
+            if len(services[0]) != 0:
+                self.services_setter(services, user)
 
         user.save()
         return user

@@ -47,7 +47,11 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
         obj.save()
 
     def update(self, request, pk, *args, **kwargs):
-        services = request.data.pop('services')
+        _mutable = request.data._mutable  # Current mutability state
+        request.data._mutable = True  # Set mutability to True
+        services = request.data.pop('services')  # Removing services here, because they will be added separately
+        request.data._mutable = _mutable  # Changing to original state
+
         user = self.get_object()
         serializer = CustomUserSerializer(data=request.data, instance=user)
         serializer.is_valid(raise_exception=True)
