@@ -27,7 +27,7 @@ class TestReview:
                               foreign_keys={'customer': User}, has_date=True, get_token=get_token)
 
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
-        default_test_delete(api_client=api_client, endpoint='/review', factory=ReviewFactory(), model=Review,
+        default_test_delete(api_client=api_client, endpoint='review', factory=ReviewFactory, model=Review,
                             get_token=get_token)
 
     def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality

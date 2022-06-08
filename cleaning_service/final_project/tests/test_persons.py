@@ -51,7 +51,7 @@ class TestUser:
                           get_token=get_token)
 
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
-        default_test_delete(api_client=api_client, endpoint='/user', factory=UsersFactory(), model=User,
+        default_test_delete(api_client=api_client, endpoint='user', factory=UsersFactory, model=User,
                             get_token=get_token)
 
     def test_not_found(self, rf, get_token):  # <----------Tests case if object is not found

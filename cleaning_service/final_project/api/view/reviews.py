@@ -1,10 +1,15 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from api.serializers.reviews import ReviewSerializer
 from core.models import Request, Review, User
+
+
+def rating_validator(data):  # Checks if inputted rating within the allowed range
+    if 5 < int(data['rate']) or int(data['rate']) < 0:
+        raise serializers.ValidationError("Rating should be in range from 0 to 5 !")
 
 
 # Views for review
@@ -41,6 +46,7 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        rating_validator(data)  # Validating data
 
         new_review = Review.objects.create(request=self.get_request(data["request"]), feedback=data['feedback'],
                                            customer=self.get_customer(data["customer"]), rate=data['rate'])
@@ -64,6 +70,8 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
 
     def update(self, request, pk):
         data = request.data
+        rating_validator(data)  # Validating data
+
         review_object = self.get_queryset()
         review = get_object_or_404(review_object, pk=pk)
         unchanged_review = get_object_or_404(review_object, pk=pk)

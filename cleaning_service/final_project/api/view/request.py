@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
@@ -8,6 +8,15 @@ from rest_framework.response import Response
 from api.serializers.request import RequestSerializer, RequestStatusSerializer
 from api.signals import company_notifier_signal
 from core.models.request import Request, RequestStatus, Service, User
+
+
+def data_validator(data):
+    if int(data['max_hour_price']) < 0:  # Checks hour price filter
+        raise serializers.ValidationError("Hour price value should be positive!")
+    if int(data['min_rating_needed']) > 5 and int(data['min_rating_needed']):  # Checks minimum required rating filter
+        raise serializers.ValidationError("Rating should be in range from 0 to 5!")
+    if int(data['total_area']) < 0:  # Checks total area value
+        raise serializers.ValidationError("Area value should be positive!")
 
 
 # Views for request status
@@ -43,11 +52,12 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        data_validator(data)  # Validating data
 
-        new_request = Request.objects.create(customer=self.get_user(data["customer"]), total_area=data['total_area'],
+        new_request = Request.objects.create(customer=self.get_user(data["customer"]), company=None,
                                              service=self.get_service(data['service']), country=data['country'],
-                                             status=self.get_status(data['status']), city=data['city'], company=None,
-                                             address_details=data['address_details'],
+                                             status=self.get_status(data['status']), city=data['city'],
+                                             address_details=data['address_details'], total_area=data['total_area'],
                                              max_hour_price=data['max_hour_price'],
                                              min_rating_needed=data['min_rating_needed'])
 
@@ -62,6 +72,8 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
 
     def update(self, request: Request, pk):
         data = request.data
+        data_validator(data)  # Validating data
+
         request_object = Request.objects.all()
         request = get_object_or_404(request_object, pk=pk)
 

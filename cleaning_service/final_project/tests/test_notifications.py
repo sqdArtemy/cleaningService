@@ -28,7 +28,7 @@ class TestNotification:
                               get_token=get_token)
 
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
-        default_test_delete(api_client=api_client, endpoint='/notification', factory=NotificationFactory(),
+        default_test_delete(api_client=api_client, endpoint='notification', factory=NotificationFactory,
                             model=Notification, get_token=get_token)
 
     def test_create(self, api_client, get_token):  # <----------Tests creating an instance functionality

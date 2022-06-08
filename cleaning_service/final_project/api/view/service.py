@@ -1,12 +1,17 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from api.serializers.service import CategorySerializer, ServiceSerializer
 from core.models.service import Category, Service
 from core.utility.filters import ServiceFilter
+
+
+def hour_data_validator(data):  # Validates if hour required value was inputted properly
+    if int(data['hour_required']) < 0:
+        raise serializers.ValidationError("Hour value should be positive!")
 
 
 # Views for category

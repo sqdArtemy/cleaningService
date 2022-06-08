@@ -28,13 +28,13 @@ def default_test_list(api_client, factory, endpoint, viewset, get_token):
 
 # Template function for testing delete
 def default_test_delete(api_client, factory, endpoint, model, get_token):
-    # Arrange
+    # Because authentication creates one more User instance
     amount = 0
-    if model == User:  # Because authentication creates one more User instance
-        amount += 1
-    obj = factory
+    if model == User:
+        amount = 1
+    obj = factory()
 
-    response = api_client.delete(f'{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
+    response = api_client.delete(f'/{endpoint}/{obj.id}', HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
     # Comparing results
     assert response.status_code == 204
@@ -66,7 +66,7 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
     del json_response['id']  # Deleting ID because different objects have different ids
 
     if 'picture' in expected_json:  # Adding media root to expected output
-            expected_json['picture'] = f"http://testserver/media/{str(expected_json['picture'])}"
+        expected_json['picture'] = f"http://testserver/media/{str(expected_json['picture'])}"
 
     if factory == OrderFactory:
         expected_json['company'] = obj.notification.user.username
