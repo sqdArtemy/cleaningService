@@ -39,10 +39,10 @@ class TestNotification:
         default_test_not_found(api_client=rf, viewset=NotificationViewSet, factory=NotificationFactory,
                                endpoint='notification', get_token=get_token)
 
-    def test_update(self, mocker, rf, get_token):  # <----------Tests updating an instance functionality
+    def test_update(self, rf, get_token):  # <----------Tests updating an instance functionality
         old_notification = NotificationFactory()
         new_notification = NotificationFactory()
-        request_dict = {
+        notification_dict = {
             'user': old_notification.user.username,
             'request': old_notification.request.id,
             'seen': new_notification.seen,
@@ -54,16 +54,15 @@ class TestNotification:
         request = rf.put(
             path=f'{self.endpoint[0:-2]}/{new_notification.id}',
             content_type='application/json',
-            data=json.dumps(request_dict),
+            data=json.dumps(notification_dict),
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
-
-        # Mocking
-        mocker.patch.object(NotificationViewSet, 'get_object', return_value=old_notification)
-        mocker.patch.object(Notification, 'save')
 
         view = NotificationViewSet.as_view({'put': 'partial_update'})
         response = view(request, pk=old_notification.id).render()
 
+        # Adding id to expected output. Did not add it before because objects
+        notification_dict['id'] = old_notification.id
+
         assert response.status_code == 200
-        assert json.loads(response.content) == request_dict
+        assert json.loads(response.content) == notification_dict

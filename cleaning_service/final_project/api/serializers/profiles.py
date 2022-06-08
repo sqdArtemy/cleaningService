@@ -8,7 +8,7 @@ from core.models import User, UserRole, Service
 class UserRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRole
-        fields = ['role']
+        fields = ['id', 'role']
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -18,8 +18,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'name', 'email', 'phone', 'role', 'country', 'city', 'address_details', 'services',
-                  'rating', 'profile_pic', 'hour_cost', 'users_rated', 'password')
+        fields = ('id', 'username', 'name', 'email', 'phone', 'role', 'country', 'city', 'address_details', 'services',
+                  'rating', 'picture', 'hour_cost', 'users_rated', 'password')
 
     password = serializers.CharField(write_only=True)
     role = serializers.CharField(source='role.role')

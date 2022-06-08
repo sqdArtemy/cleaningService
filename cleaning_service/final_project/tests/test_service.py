@@ -11,8 +11,7 @@ from .fixtures import api_client, get_token
 sys.path.append('..')
 from api.view import CategoryViewSet, ServiceViewSet
 
-from .default_tests import (default_test_create, default_test_delete,
-                            default_test_list, default_test_not_authorized,
+from .default_tests import (default_test_create, default_test_delete, default_test_list, default_test_not_authorized,
                             default_test_not_found, default_test_retrieve)
 
 pytestmark = pytest.mark.django_db  # Links with django data base
@@ -58,7 +57,7 @@ class TestService:
     def test_not_authenticated(self, api_client):
         default_test_not_authorized(api_client=api_client, factory=ServiceFactory, endpoint='service')
 
-    def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
+    def test_update(self, rf, get_token):   # <----------Tests updating an instance functionality
         old_service = ServiceFactory()
         new_service = ServiceFactory()
         service_dict = {
@@ -69,6 +68,10 @@ class TestService:
             'description': new_service.description,
         }
 
+        # Setting new unique name to a service in order to avoid errors
+        new_service.name = 'new_unique_name'
+        new_service.save()
+
         request = rf.put(
             path=f'{self.endpoint[0:-2]}/{old_service.id}',
             content_type='application/json',
@@ -76,15 +79,13 @@ class TestService:
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
 
-        # Mocking
-        mocker.patch.object(ServiceViewSet, 'get_object', return_value=old_service)
-        mocker.patch.object(Service, 'save')
-
         view = ServiceViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_service.id).render()
 
         # Adding core media folder to expected json
         service_dict['picture'] = '/media/' + service_dict['picture']
+
+        service_dict['id'] = old_service.id  # Adding id to expected output. Did not add it before because objects
 
         assert response.status_code == 200
         assert json.loads(response.content) == service_dict

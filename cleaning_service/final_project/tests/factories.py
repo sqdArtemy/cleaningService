@@ -56,7 +56,7 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     rating = fake_data('pyint', min_value=1, max_value=5)
     hour_cost = fake_data('pyint')
     users_rated = fake_data('pyint')
-    profile_pic = None
+    picture = None
 
     @factory.post_generation
     def services(self, create, extracted, **kwargs):

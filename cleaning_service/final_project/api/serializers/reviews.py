@@ -6,7 +6,7 @@ from core.models.reviews import Review
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['request', 'customer', 'feedback', 'rate', 'created_at']
+        fields = ('id', 'request', 'customer', 'feedback', 'rate', 'created_at')
 
     customer = serializers.CharField(source='customer.username')
     request = serializers.SerializerMethodField()

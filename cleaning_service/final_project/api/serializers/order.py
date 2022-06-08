@@ -6,7 +6,7 @@ from core.models import Order
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ('notification', 'company', 'total_cost', 'request', 'accepted')
+        fields = ('id', 'notification', 'company', 'total_cost', 'request', 'accepted')
 
     company = serializers.CharField(source='notification.user.username')
 

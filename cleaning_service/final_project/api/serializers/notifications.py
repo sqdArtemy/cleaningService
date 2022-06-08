@@ -6,7 +6,7 @@ from core.models import Notification, Request
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = ('user', 'header', 'text', 'request', 'seen', 'accepted')
+        fields = ('id', 'user', 'header', 'text', 'request', 'seen', 'accepted')
 
     user = serializers.CharField(source="user.username")
 

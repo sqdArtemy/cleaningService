@@ -4,7 +4,7 @@ from django.forms.models import model_to_dict
 
 from core.models import Request, User, Service
 
-from .factories import UserRoleFactory, UsersFactory
+from .factories import UserRoleFactory, UsersFactory, OrderFactory
 
 
 # Template function in order to test list view
@@ -47,12 +47,9 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
     obj = factory()
     request = api_client.get(f'/{endpoint}/{obj.id}', {}, HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
 
-    # converts model instance into expected fields
-    expected_json = model_to_dict(instance=obj, exclude=("id", "password", "is_active", 'is_staff', 'is_superuser',
-                                                         'last_login', 'groups', 'user_permissions'))
+    expected_json = model_to_dict(instance=obj, exclude='id')  # Converts model instance into expected fields
 
-    # If model has a picture => refactor it to appropriate format
-    if 'picture' in expected_json:
+    if 'picture' in expected_json:  # If model has a picture => refactor it to appropriate format
         expected_json['picture'] = str(expected_json['picture'])
 
     if foreign_keys is not None:  # Substituting foreign keys ID`s with serializer`s representation
@@ -63,15 +60,18 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
     response = view(request, pk=obj.id).render()
 
     json_response = json.loads(response.content)
+    del json_response['id']  # Deleting ID because different objects have different ids
 
     if has_date is not None:  # Formatting timedate field
         json_response['created_at'] = json.dumps(json_response['created_at'], indent=4, sort_keys=True, default=str)
         json_response['created_at'] = json_response['created_at'].replace('Z', '').replace('T', " ")
         expected_json['created_at'] = json.dumps(expected_json['created_at'], indent=4, sort_keys=True, default=str)
 
-    # Adding media root to expected output
-    if 'picture' in expected_json:
-        expected_json['picture'] = 'http://testserver/media/' + str(expected_json['picture'])
+    if 'picture' in expected_json:  # Adding media root to expected output
+            expected_json['picture'] = f"http://testserver/media/{str(expected_json['picture'])}"
+
+    if factory == OrderFactory:
+        expected_json['company'] = obj.notification.user.username
 
     # Comparing results
     assert response.status_code == 200
@@ -102,6 +102,7 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
         HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
     )
     json_response = json.loads(response.content)
+    del json_response['id']  # Deleting id because different objects have unique id
 
     if model == Request:  # When request created this field should be empty
         expected_json['company'] = None
@@ -113,6 +114,9 @@ def default_test_create(api_client, factory, endpoint, model, get_token, foreign
 
     if has_date is not None:  # Formatting date because both objects were created at different time
         expected_json['created_at'] = json_response['created_at']
+
+    if factory == OrderFactory:  # Format data in a proper way
+        expected_json['company'] = obj.notification.user.username
 
     # Comparing results
     assert response.status_code == 200

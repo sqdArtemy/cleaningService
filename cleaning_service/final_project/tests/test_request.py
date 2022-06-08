@@ -56,7 +56,7 @@ class TestRequest:
         default_test_not_found(api_client=rf, viewset=RequestViewSet, factory=RequestFactory,
                                endpoint='request', get_token=get_token)
 
-    def test_update(self, mocker, rf, get_token):  # <----------Tests updating an instance functionality
+    def test_update(self, rf, get_token):  # <----------Tests updating an instance functionality
         post_save.disconnect(sender=Request, receiver=company_notifier_signal)
         old_request = RequestFactory()
         new_request = RequestFactory()
@@ -80,16 +80,13 @@ class TestRequest:
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
 
-        # Mocking
-        mocker.patch.object(RequestViewSet, 'get_object', return_value=old_request)
-        mocker.patch.object(Request, 'save')
-
         view = RequestViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_request.id).render()
 
-        # Deleting total cost because it depends on a service which is different in both cases
         json_response = json.loads(response.content)
+        # Deleting total cost because it depends on a service which is different in both cases
         del json_response['total_cost']
+        request_dict['id'] = old_request.id  # Adding id to expected output. Did not add it before because objects
 
         assert response.status_code == 200
         assert json_response == request_dict

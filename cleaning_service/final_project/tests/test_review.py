@@ -42,7 +42,7 @@ class TestReview:
     def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
         old_review = ReviewFactory()
         new_review = ReviewFactory()
-        request_dict = {
+        review_dict = {
             'feedback': new_review.feedback,
             'rate': new_review.rate,
             'created_at': json.dumps(old_review.created_at, indent=4, sort_keys=True, default=str),
@@ -53,19 +53,17 @@ class TestReview:
         request = rf.put(
             path=f'{self.endpoint[0:-2]}/{old_review.id}',
             content_type='application/json',
-            data=json.dumps(request_dict),
+            data=json.dumps(review_dict),
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
-
-        # Mocking
-        mocker.patch.object(ReviewViewSet, 'get_object', return_value=old_review)
-        mocker.patch.object(Review, 'save')
 
         view = ReviewViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_review.id).render()
 
         # Formatting date in required data
-        request_dict['created_at'] = f"""{request_dict['created_at'].replace(' ', 'T').replace('"','')}Z"""
+        review_dict['created_at'] = f"""{review_dict['created_at'].replace(' ', 'T').replace('"','')}Z"""
+        review_dict['id'] = old_review.id  # Adding id to expected output. Did not add it before because objects
+
 
         assert response.status_code == 200
-        assert json.loads(response.content) == request_dict
+        assert json.loads(response.content) == review_dict

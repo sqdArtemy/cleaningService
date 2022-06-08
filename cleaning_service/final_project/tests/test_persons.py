@@ -22,8 +22,9 @@ def service_formatter(services):
     # Formatting services field for output
     formated_services = []
     for srv in services:
-        srv = model_to_dict(srv, exclude='id')
+        srv = model_to_dict(srv)
         srv['category'] = str(Category.objects.get(id=srv['category']))
+        srv['hours_required'] = int(srv['hours_required'])
         srv['picture'] = '/media/' + str(srv['picture'])
         formated_services.append(srv)
     return formated_services
@@ -50,10 +51,6 @@ class TestUser:
         default_test_list(api_client=rf, factory=UsersFactory, endpoint=self.endpoint, viewset=UserViewSet,
                           get_token=get_token)
 
-    def test_retrieve(self, rf, get_token):  # <----------Tests getting only 1 item
-        default_test_retrieve(api_client=rf, factory=UsersFactory, endpoint='user', viewset=UserViewSet,
-                              foreign_keys={'role': UserRole}, get_token=get_token)
-
     def test_delete(self, api_client, get_token):  # <----------Tests deleting functionality
         default_test_delete(api_client=api_client, endpoint='/user', factory=UsersFactory(), model=User,
                             get_token=get_token)
@@ -62,8 +59,31 @@ class TestUser:
         default_test_not_found(api_client=rf, viewset=UserViewSet, factory=UsersFactory,
                                endpoint='user', get_token=get_token)
 
-    def test_not_authenticated(self, api_client):
+    def test_not_authenticated(self, api_client):  # <----------Tests if user is not authenticated
         default_test_not_authorized(api_client=api_client, factory=UsersFactory, endpoint='user')
+
+    def test_retrieve(self, rf, get_token):  # <----------Tests getting only 1 item
+        # Arrange
+        user = UsersFactory()
+        request = rf.get(f'/{self.endpoint}/{user.id}', {}, HTTP_AUTHORIZATION='Bearer {}'.format(get_token))
+
+        # converts model instance into expected fields
+        expected_json = model_to_dict(instance=user, exclude=("password", "is_active", 'is_staff', 'is_superuser',
+                                                              'last_login', 'groups', 'user_permissions'))
+
+        # Formatting data in proper way
+        expected_json['picture'] = str(expected_json['picture'])
+        expected_json['role'] = str(UserRole.objects.get(id=expected_json['role']))
+
+        view = UserViewSet.as_view({'get': 'retrieve'})
+        response = view(request, pk=user.id).render()
+
+        expected_json['id'] = user.id  # Adding id to expected output. Did not add it before because objects
+        expected_json['picture'] = None  # Setting None value instead of blank field
+
+        # Comparing results
+        assert response.status_code == 200
+        assert json.loads(response.content) == expected_json
 
     def test_create(self, rf, get_token):  # <----------Tests creating an instance functionality
         valid_data_dict = factory.build(
@@ -86,17 +106,21 @@ class TestUser:
 
         view = create
         response = view(request).render()
+        json_response = json.loads(response.content)
 
-        # Deleting password from the dict, because response does not return password
-        del valid_data_dict['password']
-
+        del valid_data_dict['password']  # Deleting password from the dict, because response does not return password
+        del json_response['id']  # Deleting id from loads because id is PK, and they are going to be different
         valid_data_dict['services'] = service_formatter(services)  # Formatting services
+
+        from pprint import pprint
+        pprint(json_response)
+        pprint(valid_data_dict)
 
         # Testing if results are equal
         assert response.status_code == 200 or response.status_code == 201
-        assert json.loads(response.content) == valid_data_dict
+        assert json_response == valid_data_dict
 
-    def test_update(self, mocker, rf, get_token):  # <----------Tests updating an instance functionality
+    def test_update(self, rf, get_token):  # <----------Tests updating an instance functionality
         services = ServiceFactory.create_batch(2)  # Creating services for many to many field
         old_user = UsersFactory(services=(services[0].id, services[1].id))
         new_user = UsersFactory(services=(services[0].id, services[1].id))
@@ -112,14 +136,13 @@ class TestUser:
             'role': new_user.role.role,
             'password': new_user.password,
             'rating': new_user.rating,
-            'profile_pic': str(new_user.profile_picture),
+            'picture': str(new_user.picture),
             'users_rated': new_user.users_rated,
         }
+        # Setting unique parameters to avoid unique constraint error
         new_user.username = 'unique_name'
         new_user.email = 'uniqueemail@gmail.com'
         new_user.save()
-
-        # UserRole.objects.create(role=old_user.role)  # Recreating user role in DB
 
         request = rf.put(
             path=f'{self.endpoint[0:-2]}/{old_user.id}',
@@ -128,20 +151,17 @@ class TestUser:
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
 
-        # # Mocking
-        mocker.patch.object(UserViewSet, 'get_object', return_value=old_user)
-        mocker.patch.object(User, 'save')
-
         view = UserViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_user.id).render()
 
         user_dict['services'] = service_formatter(services)  # Formatting services
+        user_dict['id'] = old_user.id  # Adding id to expected output. Did not add it before because objects
 
         # Deleting password from the dict, because response does not return password
         del user_dict['password']
         # If user has no picture - format empty field
-        if len(user_dict['profile_pic']) == 0:
-            user_dict['profile_pic'] = None
+        if len(user_dict['picture']) == 0:
+            user_dict['picture'] = None
 
-        # assert response.status_code == 200
+        assert response.status_code == 200
         assert json.loads(response.content) == user_dict

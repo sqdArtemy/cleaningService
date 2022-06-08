@@ -6,13 +6,13 @@ from core.models.service import Category, Service
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('naming',)
+        fields = ('id', 'naming')
 
 
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ('name', 'hours_required', 'category', 'picture', 'description')
+        fields = ('id', 'name', 'hours_required', 'category', 'picture', 'description')
 
     category = serializers.CharField(source='category.naming')
 
