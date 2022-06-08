@@ -102,7 +102,6 @@ class ReviewFactory(DjangoModelFactory):
     customer = factory.SubFactory(UsersFactory)
     feedback = fake_data('text')
     rate = fake_data('pyint', min_value=1, max_value=5)
-    created_at = fake_data('date_time')
 
 
 # Factories for notifications.py ---------------------------------------------------------------------------------------

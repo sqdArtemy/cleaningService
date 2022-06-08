@@ -1,6 +1,8 @@
 import json
 import pytest
 
+from django.utils import timezone
+
 from core.models import Review, User
 
 from .factories import ReviewFactory
@@ -42,10 +44,11 @@ class TestReview:
     def test_update(self, mocker, rf, get_token):   # <----------Tests updating an instance functionality
         old_review = ReviewFactory()
         new_review = ReviewFactory()
+
         review_dict = {
             'feedback': new_review.feedback,
             'rate': new_review.rate,
-            'created_at': json.dumps(old_review.created_at, indent=4, sort_keys=True, default=str),
+            'created_at': old_review.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
             'customer': old_review.customer.username,
             'request': old_review.request.id,
         }
@@ -53,17 +56,14 @@ class TestReview:
         request = rf.put(
             path=f'{self.endpoint[0:-2]}/{old_review.id}',
             content_type='application/json',
-            data=json.dumps(review_dict),
+            data=review_dict,
             HTTP_AUTHORIZATION='Bearer {}'.format(get_token)
         )
 
         view = ReviewViewSet.as_view({'put': 'update'})
         response = view(request, pk=old_review.id).render()
 
-        # Formatting date in required data
-        review_dict['created_at'] = f"""{review_dict['created_at'].replace(' ', 'T').replace('"','')}Z"""
         review_dict['id'] = old_review.id  # Adding id to expected output. Did not add it before because objects
 
-
         assert response.status_code == 200
-        assert json.loads(response.content) == review_dict
+        assert response.data == review_dict

@@ -1,5 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -72,5 +73,4 @@ def request_changer(sender, instance: Order, **kwargs):
             instance.request.status = RequestStatus.objects.get(status='Accepted')
             instance.request.save()
         else:
-            raise Exception(Response("Request is already processing by another company!",
-                                     status=status.HTTP_403_FORBIDDEN))
+            raise PermissionDenied("Request is already processing by another company!")

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.http import QueryDict
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, decorators, mixins, status
 from rest_framework.permissions import (IsAuthenticated,
@@ -47,13 +48,17 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
         obj.save()
 
     def update(self, request, pk, *args, **kwargs):
-        _mutable = request.data._mutable  # Current mutability state
-        request.data._mutable = True  # Set mutability to True
-        services = request.data.pop('services')  # Removing services here, because they will be added separately
-        request.data._mutable = _mutable  # Changing to original state
+        data = request.data  # Collecting data from request
+        if type(data) == QueryDict:
+            _mutable = data._mutable  # Current mutability state
+            data._mutable = True  # Set mutability to True
+            services = data.pop('services')  # Removing services here, because they will be added separately
+            data._mutable = _mutable  # Changing to original state
+        else:
+            services = data.pop('services')
 
         user = self.get_object()
-        serializer = CustomUserSerializer(data=request.data, instance=user)
+        serializer = CustomUserSerializer(data=data, instance=user)
         serializer.is_valid(raise_exception=True)
         user = serializer.update(serializer.validated_data, services, pk)
         serializer = CustomUserSerializer(instance=user)

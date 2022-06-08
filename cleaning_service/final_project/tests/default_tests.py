@@ -56,16 +56,14 @@ def default_test_retrieve(api_client, factory, endpoint, viewset, get_token, for
         for item in foreign_keys.keys():
             expected_json[item] = str(foreign_keys[item].objects.get(id=expected_json[item]))
 
+    if has_date is True:
+        expected_json['created_at'] = obj.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+
     view = viewset.as_view({'get': 'retrieve'})
     response = view(request, pk=obj.id).render()
 
     json_response = json.loads(response.content)
     del json_response['id']  # Deleting ID because different objects have different ids
-
-    if has_date is not None:  # Formatting timedate field
-        json_response['created_at'] = json.dumps(json_response['created_at'], indent=4, sort_keys=True, default=str)
-        json_response['created_at'] = json_response['created_at'].replace('Z', '').replace('T', " ")
-        expected_json['created_at'] = json.dumps(expected_json['created_at'], indent=4, sort_keys=True, default=str)
 
     if 'picture' in expected_json:  # Adding media root to expected output
             expected_json['picture'] = f"http://testserver/media/{str(expected_json['picture'])}"
