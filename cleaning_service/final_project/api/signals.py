@@ -33,11 +33,6 @@ def company_notifier_signal(sender, instance: Request, **kwargs):
                                     hour_cost__lte=float(instance.max_hour_price), country=instance.country,
                                     city=instance.city, services__in=[instance.service])
 
-    # # If there is no companies - aware user
-    # if len(companies) == 0:
-    #     raise Exception(
-    #         Response("There are no companies which matches your request", status=status.HTTP_400_BAD_REQUEST))
-
     header = 'New request available, check it out!'
     text = f'New request for cleaning available! \nService: {instance.service.name}\nCustomer details:' \
            f'\n\tName: {instance.customer.name}\n\tEmail: {instance.customer.email}'
