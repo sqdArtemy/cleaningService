@@ -71,9 +71,16 @@ class UserViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Des
 @decorators.authentication_classes([])
 @decorators.permission_classes([AllowAny])
 def create(request, *args, **kwargs):
-    services = request.data.pop('services')
+    data = request.data  # Collecting data from request
+    if type(data) == QueryDict:
+        _mutable = data._mutable  # Current mutability state
+        data._mutable = True  # Set mutability to True
+        services = data.pop('services')  # Removing services here, because they will be added separately
+        data._mutable = _mutable  # Changing to original state
+    else:
+        services = data.pop('services')
 
-    serializer = CustomUserSerializer(data=request.data)
+    serializer = CustomUserSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     user = serializer.create(serializer.validated_data, services)
     serializer = CustomUserSerializer(instance=user)
