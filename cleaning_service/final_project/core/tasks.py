@@ -6,7 +6,6 @@ from final_project.settings import settings
 
 @shared_task(bind=True)
 def mail_sender_task(self, user_mails: list, header, text, *args, **kwargs):  # Task which will send notification mails
-    print(user_mails)
     send_mail(
             subject=header,
             message=text,

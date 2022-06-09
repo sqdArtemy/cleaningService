@@ -12,7 +12,7 @@ def notification_maker(request, users, header, text):  # Creating notification o
         user_mails.append(user.email)
 
     # Sending mails to users
-    # mail_sender_task.delay(user_mails=user_mails, text=text, header=header)
+    mail_sender_task.delay(user_mails=user_mails, text=text, header=header)
     for user in users:  # Sending notification to all needed users
         Notification.objects.create(
             request=request,
