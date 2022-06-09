@@ -49,7 +49,7 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
         rating_validator(data)  # Validating data
 
         new_review = Review.objects.create(request=self.get_request(data["request"]), feedback=data['feedback'],
-                                           customer=self.get_customer(data["customer"]), rate=data['rate'])
+                                           rate=data['rate'])
         new_review.save()
 
         # Changing overall rating of a company
@@ -78,7 +78,6 @@ class ReviewViewSet(viewsets.ModelViewSet):  # ViewSet
 
         # Updating current requests
         review.request = review.request
-        review.customer = review.customer
         review.feedback = data['feedback']
         review.rate = data['rate']
         review.save()

@@ -45,7 +45,6 @@ class NotificationViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         notification = self.get_object()
         data = request.data
-        notification.seen = data['seen']
         notification.accepted = data['accepted']
         notification.save()
         serializer = NotificationSerializer(notification, partial=True)

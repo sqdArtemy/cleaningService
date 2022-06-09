@@ -56,10 +56,9 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
 
         new_request = Request.objects.create(customer=self.get_user(data["customer"]), company=None,
                                              service=self.get_service(data['service']), country=data['country'],
-                                             status=self.get_status(data['status']), city=data['city'],
+                                             city=data['city'], min_rating_needed=data['min_rating_needed'],
                                              address_details=data['address_details'], total_area=data['total_area'],
-                                             max_hour_price=data['max_hour_price'],
-                                             min_rating_needed=data['min_rating_needed'])
+                                             max_hour_price=data['max_hour_price'], status=self.get_status('Pending'))
 
         if 'no_signal' not in data:  # Sending signal if it is not test
             post_save.connect(receiver=company_notifier_signal, sender=Request)

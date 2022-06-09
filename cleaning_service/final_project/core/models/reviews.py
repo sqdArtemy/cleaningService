@@ -15,5 +15,10 @@ class Review(models.Model):
         MaxValueValidator(5), MinValueValidator(0)))
     created_at = models.DateTimeField(verbose_name="Time of creation", default=timezone.now, null=False)
 
+    def save(self, *args, **kwargs):
+        # Set instance of customer instead of asking it from user
+        self.customer = self.request.customer
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.request}-{self.rate}"
