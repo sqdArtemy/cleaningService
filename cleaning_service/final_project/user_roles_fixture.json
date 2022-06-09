@@ -1,0 +1,16 @@
+[
+  {
+    "model": "core.userrole",
+    "pk": 1,
+    "fields": {
+      "role": "Customer"
+    }
+  },
+  {
+    "model": "core.userrole",
+    "pk": 2,
+    "fields": {
+      "role": "Company"
+    }
+  }
+]

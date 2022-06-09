@@ -1,0 +1,37 @@
+[
+  {
+    "model": "core.requeststatus",
+    "pk": 1,
+    "fields": {
+      "status": "Pending"
+    }
+  },
+  {
+    "model": "core.requeststatus",
+    "pk": 2,
+    "fields": {
+      "status": "Accepted"
+    }
+  },
+  {
+    "model": "core.requeststatus",
+    "pk": 3,
+    "fields": {
+      "status": "In progress"
+    }
+  },
+  {
+    "model": "core.requeststatus",
+    "pk": 4,
+    "fields": {
+      "status": "Completed"
+    }
+  },
+  {
+    "model": "core.requeststatus",
+    "pk": 5,
+    "fields": {
+      "status": "Canceled"
+    }
+  }
+]
