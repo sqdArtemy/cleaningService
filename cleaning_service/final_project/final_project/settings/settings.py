@@ -227,3 +227,14 @@ DEFAULT_FROM_EMAIL = f'Cleaning api<{email_host_user}>'
 # Settings for picture savings
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Adding JWT authentication to Swagger UI
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
