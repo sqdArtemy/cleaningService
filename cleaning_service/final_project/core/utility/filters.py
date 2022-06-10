@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from core.models import Service, User, Order
+from core.models import Service, User, Order, Notification
 
 
 # Some base filters
@@ -35,3 +35,12 @@ class OrderFilter(filters.FilterSet):
     class Meta:
         model = Order
         fields = ('total_cost', 'request', 'accepted')
+
+
+# Filters for notification model
+class NotificationFilter(filters.FilterSet):
+    user = filters.CharFilter(field_name='user__username')
+
+    class Meta:
+        model = Notification
+        fields = ('seen', 'accepted', 'user', 'request')

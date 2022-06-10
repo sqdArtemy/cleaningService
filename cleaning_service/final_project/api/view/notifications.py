@@ -1,15 +1,19 @@
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.serializers import NotificationSerializer
 from core.models import Notification, Request, User
+from core.utility.filters import NotificationFilter
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = NotificationSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = NotificationFilter
 
     @staticmethod
     def get_user(username):
