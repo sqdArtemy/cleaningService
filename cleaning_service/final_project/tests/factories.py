@@ -74,7 +74,7 @@ class RequestStatusFactory(DjangoModelFactory):  # This factory creates random s
     class Meta:
         model = RequestStatus
 
-    status = factory.Iterator(["Pending", "Accepted", "Done"])
+    status = factory.Iterator(["Pending"])
 
 
 class RequestFactory(DjangoModelFactory):  # This factory creates requests with random data
@@ -89,7 +89,7 @@ class RequestFactory(DjangoModelFactory):  # This factory creates requests with 
     city = fake_data('city')
     address_details = fake_data('address')
     total_area = fake_data('pyint')
-    min_rating_needed = fake_data('pyint')
+    min_rating_needed = fake_data('pyint', min_value=0, max_value=5)
     max_hour_price = fake_data('pyint')
 
 

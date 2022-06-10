@@ -36,7 +36,7 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
 
     @staticmethod
     def get_status(status):  # Obtaining request status object
-        return RequestStatus.objects.get(status=status)
+        return RequestStatus.objects.filter(status=status).first()
 
     @staticmethod
     def get_service(name):  # Obtaining service object
