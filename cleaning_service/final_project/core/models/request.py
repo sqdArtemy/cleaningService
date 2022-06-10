@@ -33,5 +33,5 @@ class Request(models.Model):
     company = models.ForeignKey(to=User, on_delete=models.SET_NULL, related_name='Company', null=True, blank=True)
     min_rating_needed = models.PositiveSmallIntegerField(verbose_name="Minimum required company`s rating", default=0,
                                                          validators=(MinValueValidator(0), MaxValueValidator(5)))
-    max_hour_price = models.FloatField(verbose_name="Maximum affordable price per hour", default=100,
+    max_meter_cost = models.FloatField(verbose_name="Maximum affordable price per meter", default=100,
                                        validators=(MinValueValidator(0.1),))

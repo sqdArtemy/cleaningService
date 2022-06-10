@@ -20,7 +20,5 @@ class Order(models.Model):
         self.customer = self.notification.request.customer
 
         # Calculate cost of the service
-        self.total_cost = float(self.notification.request.total_area) * \
-                          int(self.notification.request.service.hours_required) * \
-                          float(self.notification.user.hour_cost)
+        self.total_cost = float(self.notification.request.total_area) * float(self.notification.user.meter_cost)
         super().save(*args, **kwargs)

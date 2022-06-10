@@ -4,6 +4,11 @@ from api.serializers.service import ServiceSerializer
 from core.models import User, UserRole, Service
 
 
+def cost_validator(data):
+    if int(data['meter_cost']) < 0:  # Checks cost per meter, it should be positive
+        raise serializers.ValidationError("Cost value should be positive!")
+
+
 class UserRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRole
@@ -13,12 +18,12 @@ class UserRoleSerializer(serializers.ModelSerializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     # Setting fields which are going to be excluded for each role
     COMPANY_EXCLUDE_FIELDS = {}
-    CUSTOMER_EXCLUDE_FIELDS = {'hour_cost', 'users_rated', 'rating', 'services'}
+    CUSTOMER_EXCLUDE_FIELDS = {'meter_cost', 'users_rated', 'rating', 'services'}
 
     class Meta:
         model = User
         fields = ('id', 'username', 'name', 'email', 'phone', 'role', 'country', 'city', 'address_details', 'services',
-                  'rating', 'picture', 'hour_cost', 'users_rated', 'password')
+                  'rating', 'picture', 'meter_cost', 'users_rated', 'password')
 
     password = serializers.CharField(write_only=True)
     role = serializers.CharField(source='role.role')
@@ -51,6 +56,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     # Overloading create func in order to set up password correctly and if extra args are passed -> they ignored
     def create(self, data: dict, services: list[str]):
+        cost_validator(data)  # Validating inputted data
         # Getting data
         role_data = data.pop('role').get('role')
         role = UserRole.objects.filter(role=role_data).first()
@@ -67,6 +73,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return new_user
 
     def update(self, data: dict, services: list[str], pk):
+        cost_validator(data)  # Validating inputted data
         # Getting data
         role_data = data.pop('role').get('role')
         picture = data.pop('picture')

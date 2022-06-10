@@ -22,7 +22,6 @@ class ServiceFactory(DjangoModelFactory):  # This factory creates services with 
 
     name = fake_data('email')
     category = factory.SubFactory(CategoryFactory)
-    hours_required = fake_data('pyint')
     description = fake_data('text')
     picture = factory.LazyAttribute(  # Faking some picture
         lambda _: ContentFile(
@@ -54,7 +53,7 @@ class UsersFactory(DjangoModelFactory):  # This factory creates users with rando
     role = factory.SubFactory(UserRoleFactory)
     password = fake_data('password')
     rating = fake_data('pyint', min_value=1, max_value=5)
-    hour_cost = fake_data('pyint')
+    meter_cost = fake_data('pyint')
     users_rated = fake_data('pyint')
     picture = None
 
@@ -90,7 +89,7 @@ class RequestFactory(DjangoModelFactory):  # This factory creates requests with 
     address_details = fake_data('address')
     total_area = fake_data('pyint')
     min_rating_needed = fake_data('pyint', min_value=0, max_value=5)
-    max_hour_price = fake_data('pyint')
+    max_meter_cost = fake_data('pyint')
 
 
 # Factories for reviews.py ---------------------------------------------------------------------------------------------

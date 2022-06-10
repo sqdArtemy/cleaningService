@@ -12,7 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        fields = ('id', 'name', 'hours_required', 'category', 'picture', 'description')
+        fields = ('id', 'name', 'category', 'picture', 'description')
 
     category = serializers.CharField(source='category.naming')
 

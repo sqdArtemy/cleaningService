@@ -11,7 +11,7 @@ from core.models.request import Request, RequestStatus, Service, User
 
 
 def data_validator(data):
-    if int(data['max_hour_price']) < 0:  # Checks hour price filter
+    if int(data['max_meter_cost']) < 0:  # Checks hour price filter
         raise serializers.ValidationError("Hour price value should be positive!")
     if int(data['min_rating_needed']) > 5 and int(data['min_rating_needed']):  # Checks minimum required rating filter
         raise serializers.ValidationError("Rating should be in range from 0 to 5!")
@@ -58,7 +58,7 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
                                              service=self.get_service(data['service']), country=data['country'],
                                              city=data['city'], min_rating_needed=data['min_rating_needed'],
                                              address_details=data['address_details'], total_area=data['total_area'],
-                                             max_hour_price=data['max_hour_price'], status=self.get_status('Pending'))
+                                             max_meter_cost=data['max_meter_cost'], status=self.get_status('Pending'))
 
         if 'no_signal' not in data:  # Sending signal if it is not test
             post_save.connect(receiver=company_notifier_signal, sender=Request)
@@ -86,7 +86,7 @@ class RequestViewSet(viewsets.ModelViewSet):  # ViewSet
         request.company = self.get_user(data['company'])
         request.address_details = data['address_details']
         request.min_rating_needed = data['min_rating_needed']
-        request.max_hour_price = data['max_hour_price']
+        request.max_meter_cost = data['max_meter_cost']
         request.save()
 
         serializer = RequestSerializer(request)

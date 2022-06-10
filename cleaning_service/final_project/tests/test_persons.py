@@ -19,14 +19,13 @@ pytestmark = pytest.mark.django_db  # Links with django data base
 # Function, which formats services in user tests
 def service_formatter(services):
     # Formatting services field for output
-    formated_services = []
+    formatted_services = []
     for srv in services:
         srv = model_to_dict(srv)
         srv['category'] = str(Category.objects.get(id=srv['category']))
-        srv['hours_required'] = int(srv['hours_required'])
         srv['picture'] = '/media/' + str(srv['picture'])
-        formated_services.append(srv)
-    return formated_services
+        formatted_services.append(srv)
+    return formatted_services
 
 
 # Tests for user roles
@@ -137,7 +136,7 @@ class TestUser:
             'rating': new_user.rating,
             'picture': None,
             'users_rated': new_user.users_rated,
-            'hour_cost': new_user.hour_cost,
+            'meter_cost': new_user.meter_cost,
         }
         # Setting unique parameters to avoid unique constraint error
         new_user.username = 'unique_name'

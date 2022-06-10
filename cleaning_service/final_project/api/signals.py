@@ -28,7 +28,7 @@ def notification_maker(request, users, header, text):  # Creating notification o
 def company_notifier_signal(sender, instance: Request, **kwargs):
     # Filtering companies to match given filters
     companies = User.objects.filter(role__role="Company", rating__gte=int(instance.min_rating_needed),
-                                    hour_cost__lte=float(instance.max_hour_price), country=instance.country,
+                                    meter_cost__lte=float(instance.max_meter_cost), country=instance.country,
                                     city=instance.city, services__in=[instance.service])
 
     header = 'New request available, check it out!'

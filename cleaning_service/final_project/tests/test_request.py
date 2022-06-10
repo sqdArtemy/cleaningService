@@ -70,7 +70,7 @@ class TestRequest:
             'country': new_request.country,
             'company': new_request.company.username,
             'min_rating_needed': new_request.min_rating_needed,
-            'max_hour_price': new_request.max_hour_price,
+            'max_meter_cost': new_request.max_meter_cost,
         }
 
         request = rf.put(

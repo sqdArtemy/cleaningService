@@ -9,11 +9,6 @@ from core.models.service import Category, Service
 from core.utility.filters import ServiceFilter
 
 
-def hour_data_validator(data):  # Validates if hour required value was inputted properly
-    if int(data['hour_required']) < 0:
-        raise serializers.ValidationError("Hour value should be positive!")
-
-
 # Views for category
 class CategoryViewSet(viewsets.ModelViewSet):  # ViewSet
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -42,9 +37,8 @@ class ServiceViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data
 
-        new_service = Service.objects.create(name=data["name"], hours_required=data["hours_required"],
-                                             picture=data['picture'], description=data["description"],
-                                             category=self.get_category(data['category']))
+        new_service = Service.objects.create(name=data["name"], category=self.get_category(data['category']),
+                                             picture=data['picture'], description=data["description"])
         new_service.save()
         serializer = ServiceSerializer(new_service)
         return Response(serializer.data)
@@ -55,7 +49,6 @@ class ServiceViewSet(viewsets.ModelViewSet):
         service = get_object_or_404(service_object, pk=pk)
 
         service.name = data['name']
-        service.hours_required = data['hours_required']
         service.picture = data['picture']
         service.category = self.get_category(data['category'])
         service.description = data['description']
